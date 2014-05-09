@@ -111,6 +111,13 @@ public class ContentProviderTableModel {
             }
         }
 
+        public String getBooleanComparison() {
+            if (mFieldType.equals(BOOLEAN)) {
+                return " == 1";
+            }
+            return "";
+        }
+
         public String getPrivateVariableName() {
             return StringUtils.getPrivateVariableName(mFieldName);
         }
