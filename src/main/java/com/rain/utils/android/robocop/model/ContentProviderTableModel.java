@@ -27,8 +27,8 @@ public class ContentProviderTableModel {
         return mFields;
     }
 
-    public void addField(String fieldName, String type, String format) {
-        mFields.add(new ContentProviderTableFieldModel(type, fieldName, format));
+    public void addField(String fieldName, String type, String format, String serializedName) {
+        mFields.add(new ContentProviderTableFieldModel(type, fieldName, format, serializedName));
     }
 
     public String getTableName() {
@@ -46,6 +46,14 @@ public class ContentProviderTableModel {
     public String getHasDateType() {
         for (ContentProviderTableFieldModel field : mFields) {
             if (field.mFieldType.toLowerCase().equals("date"))
+                return Boolean.TRUE.toString();
+        }
+        return null;
+    }
+
+    public String getHasSerializedNames() {
+        for (ContentProviderTableFieldModel field : mFields) {
+            if (field.mSerializedName != null && field.mSerializedName.length() > 0)
                 return Boolean.TRUE.toString();
         }
         return null;
@@ -69,10 +77,18 @@ public class ContentProviderTableModel {
         @SerializedName("format")
         private String mFieldFormat;
 
-        public ContentProviderTableFieldModel(String fieldType, String fieldName, String fieldFormat) {
+        @SerializedName("serialized_name")
+        private String mSerializedName;
+
+        public ContentProviderTableFieldModel(
+                String fieldType,
+                String fieldName,
+                String fieldFormat,
+                String serializedName) {
             mFieldType = fieldType;
             mFieldName = fieldName;
             mFieldFormat = fieldFormat;
+            mSerializedName = serializedName;
         }
 
         public String getFieldType() {
@@ -147,6 +163,10 @@ public class ContentProviderTableModel {
 
         public String getTimeFormat() {
             return mFieldFormat;
+        }
+
+        public String getSerializedName() {
+            return mSerializedName;
         }
     }
 

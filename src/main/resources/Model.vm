@@ -3,6 +3,10 @@ package ${packageName}.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+#if($hasSerializedNames)
+import com.google.gson.annotations.SerializedName;
+
+#end
 import ${packageName}.database.table.${tableName}Table;
 
 #if($hasDateType)
@@ -23,6 +27,10 @@ public class ${tableName} {
     private long mRowId;
 #foreach( $field in $fields )
 #if($field)
+#if(${field.getSerializedName()})
+
+    @SerializedName("$field.getSerializedName()")
+#end
     private ${field.getJavaTypeString()} ${field.getPrivateVariableName()};
 #end
 #end
@@ -34,16 +42,15 @@ public class ${tableName} {
 #end
 #end
 #end
-
 #if( $participatingRelationships )
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKey = $relationship.getForeignKeyPrivateVariableNameForTable($table) )
 #if( $foreignKey )
     private Long ${foreignKey};
+#end
+#end
+#end
 
-#end
-#end
-#end
     private ContentValues mValues = new ContentValues();
 
     public ${tableName}() {}
