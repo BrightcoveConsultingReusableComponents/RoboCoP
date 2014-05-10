@@ -21,7 +21,6 @@ public class StringUtils {
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
             camelCaseString = camelCaseString + ((i == 0) ? part.toLowerCase() : toProperCase(part));
-//            camelCaseString = camelCaseString + toProperCase(part);
         }
         return camelCaseString;
     }
