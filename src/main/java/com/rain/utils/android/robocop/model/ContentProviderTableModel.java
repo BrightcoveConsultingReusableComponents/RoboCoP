@@ -27,8 +27,8 @@ public class ContentProviderTableModel {
         return mFields;
     }
 
-    public void addField(String fieldName, String type) {
-        mFields.add(new ContentProviderTableFieldModel(type, fieldName));
+    public void addField(String fieldName, String type, String format) {
+        mFields.add(new ContentProviderTableFieldModel(type, fieldName, format));
     }
 
     public String getTableName() {
@@ -43,6 +43,13 @@ public class ContentProviderTableModel {
         return StringUtils.getConstantString(mTableName);
     }
 
+    public String getHasDateType() {
+        for (ContentProviderTableFieldModel field : mFields) {
+            if (field.mFieldType.toLowerCase().equals("date"))
+                return Boolean.TRUE.toString();
+        }
+        return null;
+    }
 
     public static class ContentProviderTableFieldModel {
 
@@ -51,6 +58,7 @@ public class ContentProviderTableModel {
         public static final String INT = "int";
         public static final String BOOLEAN = "boolean";
         public static final String LONG = "long";
+        public static final String DATE = "date";
 
         @SerializedName("type")
         private String mFieldType;
@@ -58,9 +66,13 @@ public class ContentProviderTableModel {
         @SerializedName("name")
         private String mFieldName;
 
-        public ContentProviderTableFieldModel(String fieldType, String fieldName) {
+        @SerializedName("format")
+        private String mFieldFormat;
+
+        public ContentProviderTableFieldModel(String fieldType, String fieldName, String fieldFormat) {
             mFieldType = fieldType;
             mFieldName = fieldName;
+            mFieldFormat = fieldFormat;
         }
 
         public String getFieldType() {
@@ -89,8 +101,7 @@ public class ContentProviderTableModel {
             String typeLower = mFieldType.toLowerCase();
             if (typeLower.equals(BOOLEAN)) {
                 return "boolean";
-            }
-            if (typeLower.equals(INT)) {
+            } else if (typeLower.equals(INT)) {
                 return "int";
             } else if (typeLower.equals(LONG) || typeLower.equals(DOUBLE)) {
                 return "double";
@@ -126,7 +137,17 @@ public class ContentProviderTableModel {
             return StringUtils.convertToTitleCase(mFieldName);
         }
 
+        public String getIsDateType() {
+            return mFieldType.toLowerCase().equals(DATE) ? Boolean.TRUE.toString() : null;
+        }
 
+        public String getStaticTimeFormatName() {
+            return mFieldName.toUpperCase() + "_TIME_FORMAT";
+        }
+
+        public String getTimeFormat() {
+            return mFieldFormat;
+        }
     }
 
     @Override

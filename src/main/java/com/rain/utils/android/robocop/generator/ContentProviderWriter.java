@@ -1,12 +1,18 @@
 package com.rain.utils.android.robocop.generator;
 
 import com.google.gson.Gson;
+import com.rain.utils.android.robocop.model.ContentProviderModel;
+import com.rain.utils.android.robocop.model.ContentProviderTableModel;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import com.rain.utils.android.robocop.model.*;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -19,6 +25,10 @@ import java.util.Properties;
 public class ContentProviderWriter {
 
     public void createContentProvider(String schemaPath, String sourcePath) {
+        System.out.println("Current Directory: " + System.getProperty("user.dir"));
+        System.out.println("Schema Path: " + schemaPath);
+        System.out.println("Source Path: " + sourcePath);
+
         Gson gson = new Gson();
         try {
             ContentProviderModel model = gson.fromJson(readFile(schemaPath), ContentProviderModel.class);
@@ -71,12 +81,13 @@ public class ContentProviderWriter {
                 tableContext.put("participatingRelationships", contentProviderModel.getRelationshipsForTable(table));
                 tableContext.put("tableName", table.getTableClassName());
                 tableContext.put("fields", table.getFields());
+                tableContext.put("hasDateType", table.getHasDateType());
                 writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
                 writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
             }
 
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 

@@ -5,8 +5,19 @@ import android.database.Cursor;
 
 import ${packageName}.database.table.${tableName}Table;
 
+#if($hasDateType)
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+#end
 import java.util.ArrayList;
+#if($hasDateType)
+import java.util.Date;
+#end
 import java.util.List;
+#if($hasDateType)
+import java.util.Locale;
+#end
 
 public class ${tableName} {
     private long mRowId;
@@ -16,15 +27,23 @@ public class ${tableName} {
 #end
 #end
 
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getIsDateType()})
+    private static final String ${field.getStaticTimeFormatName()} = "${field.getTimeFormat()}";
+#end
+#end
+#end
+
 #if( $participatingRelationships )
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKey = $relationship.getForeignKeyPrivateVariableNameForTable($table) )
 #if( $foreignKey )
     private Long ${foreignKey};
-#end
-#end
-#end
 
+#end
+#end
+#end
     private ContentValues mValues = new ContentValues();
 
     public ${tableName}() {}
@@ -41,8 +60,8 @@ public class ${tableName} {
         set${field.getNameAsTitleCase()}(cursor.${field.getJavaTypeStringGetter()}(cursor.getColumnIndex(prefix + ${tableName}Table.${field.getConstantString()}))${field.getBooleanComparison()});
 #end
 #end
-
 #if( $participatingRelationships )
+
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKeyTitleCase = $relationship.getForeignKeyVariableAsTitleCase($table) )
 #set( $foreignKeyConstant = $relationship.getForeignKeyNameForTable($table) )
@@ -67,29 +86,42 @@ public class ${tableName} {
         return mValues;
     }
 
-    public Long getRowId() {
-        return mRowId;
-    }
-
     public void setRowId(long _id) {
         mRowId = _id;
         mValues.put(${tableName}Table._ID, _id);
     }
+
+    public Long getRowId() {
+        return mRowId;
+    }
+
 #foreach ($field in $fields)
 #if($field)
+#if(${field.getIsDateType()})
+    public void set${field.getNameAsTitleCase()}(Date ${field.getFieldName()}) {
+        set${field.getNameAsTitleCase()}(convertDateToString(${field.getFieldName()}, ${field.getStaticTimeFormatName()}));
+    }
+
+#end
     public void set${field.getNameAsTitleCase()}(${field.getJavaTypeString()} ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getFieldName()};
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
     }
 
+#if(!${field.getIsDateType()})
     public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
-            return ${field.getPrivateVariableName()};
+        return ${field.getPrivateVariableName()};
     }
 
+#end
+#if(${field.getIsDateType()})
+    public Date get${field.getNameAsTitleCase()}() {
+        return convertDateFromString(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+    }
 
 #end
 #end
-
+#end
 #if( $participatingRelationships )
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKeyTitleCase = $relationship.getForeignKeyVariableAsTitleCase($table) )
@@ -109,7 +141,6 @@ public class ${tableName} {
 #end
 #end
 #end
-
     public static List<${tableName}> listFromCursor(Cursor cursor) {
         List<${tableName}> list = new ArrayList<${tableName}>();
 
@@ -121,4 +152,22 @@ public class ${tableName} {
 
         return list;
     }
+#if($hasDateType)
+
+
+    private Date convertDateFromString(String date, String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.US);
+        try {
+            return simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String convertDateToString(Date date, String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.US);
+        return simpleDateFormat.format(date);
+    }
+#end
 }

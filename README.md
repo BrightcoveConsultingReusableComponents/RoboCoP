@@ -34,7 +34,7 @@ Create a JSON schema definition and place it in the same directory as the RoboCo
 {
   "packageName" : "<the package name you want for your ContentProvider and associated classes/>",
   "providerName" : "<the base name for your provider. eg. 'Example' will yield 'ExampleProvider.java'/>",
-  "databaseVersion" : <the numeric value for the current version of your database. if you increment this, the database will upgrade/>,
+  "databaseVersion" : "<the numeric value for the current version of your database. if you increment this, the database will upgrade/>",
   "tables" : [], //see below for table definition rules
   "relationships" : [] //see below for table definition rules
 }
@@ -53,8 +53,9 @@ Create a JSON schema definition and place it in the same directory as the RoboCo
 
 ```json
 {
-  "type" : "<the ~java data type for this field. Your options are: string, double, int, boolean, long (lower case). These will map to SQLite types/>",
+  "type" : "<the ~java data type for this field. Your options are: string, double, int, boolean, long, date (lower case). These will map to SQLite types.  In the case of date, it will be stored as a string in SQLite./>",
   "name" : "<the name of the field (lower case, underscore separated)/>"
+  "format" : "<Only applicable for 'date' type.  Should be a format that [java.text.SimpleDateFormat](http://developer.android.com/reference/java/text/SimpleDateFormat.html) understands.  Will be used to convert date from a string to an actual [java.util.Date](http://developer.android.com/reference/java/util/Date.html) object./>"
 }
 ```
 
