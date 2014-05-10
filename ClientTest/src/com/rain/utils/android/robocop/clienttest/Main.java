@@ -29,7 +29,7 @@ public class Main {
 //        ContentProviderModel model = new ContentProviderModel("com.rain.app", "Rain", 1, tables);
 //
         ContentProviderWriter writer = new ContentProviderWriter();
-        writer.createContentProvider("ClientTest/resources/contentProviderSchema_simple.json", "ClientTest/src-gen/");
+        writer.createContentProvider("ClientTest/resources/example_schema.json", "ClientTest/src-gen/");
 //        writer.createContentProvider(model,"ClientTest/src-gen/");
     }
 }

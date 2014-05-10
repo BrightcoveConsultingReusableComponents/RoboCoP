@@ -1,0 +1,249 @@
+{
+    "packageName": "com.brightcove.tinasample.data",
+    "providerName": "parse",
+    "databaseVersion": 1,
+    "tables": [
+        {
+            "name": "video",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "object_id",
+                    "serialized_name": "objectId"
+                },
+                {
+                    "type": "string",
+                    "name": "video_type",
+                    "serialized_name": "VideoType"
+                },
+                {
+                    "type": "date",
+                    "name": "created_at",
+                    "serialized_name": "createdAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "date",
+                    "name": "updated_at",
+                    "serialized_name": "updatedAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "string",
+                    "name": "title",
+                    "serialized_name": "Title"
+                },
+                {
+                    "type": "int",
+                    "name": "season",
+                    "serialized_name": "Season"
+                },
+                {
+                    "type": "int",
+                    "name": "episode",
+                    "serialized_name": "Episode"
+                },
+                {
+                    "type": "string",
+                    "name": "thumbnail",
+                    "serialized_name": "Thumbnail"
+                },
+                {
+                    "type": "string",
+                    "name": "genres",
+                    "serialized_name": "Genres"
+                },
+                {
+                    "type": "string",
+                    "name": "description",
+                    "serialized_name": "Description"
+                },
+                {
+                    "type": "string",
+                    "name": "rating",
+                    "serialized_name": "Rating"
+                },
+                {
+                    "type": "string",
+                    "name": "show_id",
+                    "serialized_name": "ShowId"
+                },
+                {
+                    "type": "string",
+                    "name": "video_id",
+                    "serialized_name": "VideoId"
+                },
+                {
+                    "type": "string",
+                    "name": "trailer_id",
+                    "serialized_name": "TrailerId"
+                },
+                {
+                    "type": "date",
+                    "name": "released",
+                    "serialized_name": "Released",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "long",
+                    "name": "runtime",
+                    "serialized_name": "Runtime"
+                }
+            ]
+        },
+        {
+            "name": "show",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "object_id",
+                    "serialized_name": "objectId"
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "serialized_name": "Name"
+                },
+                {
+                    "type": "date",
+                    "name": "created_at",
+                    "serialized_name": "createdAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "date",
+                    "name": "updated_at",
+                    "serialized_name": "updatedAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "string",
+                    "name": "description",
+                    "serialized_name": "Description"
+                },
+                {
+                    "type": "string",
+                    "name": "trailer_id",
+                    "serialized_name": "TrailerId"
+                },
+                {
+                    "type": "string",
+                    "name": "genres",
+                    "serialized_name": "Genres"
+                },
+                {
+                    "type": "string",
+                    "name": "thumbnail",
+                    "serialized_name": "Thumbnail"
+                }
+            ]
+        },
+        {
+            "name": "user",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "object_id",
+                    "serialized_name": "objectId"
+                },
+                {
+                    "type": "string",
+                    "name": "username"
+                },
+                {
+                    "type": "string",
+                    "name": "password"
+                },
+                {
+                    "type": "boolean",
+                    "name": "email_verified",
+                    "serialized_name": "emailVerified"
+                },
+                {
+                    "type": "string",
+                    "name": "email"
+                },
+                {
+                    "type": "date",
+                    "name": "created_at",
+                    "serialized_name": "createdAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "date",
+                    "name": "updated_at",
+                    "serialized_name": "updatedAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+            ]
+        },
+        {
+            "name": "watch_progress",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "object_id",
+                    "serialized_name": "objectId"
+                },
+                {
+                    "type": "string",
+                    "name": "user_id",
+                    "serialized_name": "userId"
+                },
+                {
+                    "type": "string",
+                    "name": "video_id",
+                    "serialized_name": "videoId"
+                },
+                {
+                    "type": "double",
+                    "name": "progress"
+                },
+                {
+                    "type": "date",
+                    "name": "created_at",
+                    "serialized_name": "createdAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "date",
+                    "name": "updated_at",
+                    "serialized_name": "updatedAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+            ]
+        },
+        {
+            "name": "featured_items",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "object_id",
+                    "serialized_name": "objectId"
+                },
+                {
+                    "type": "string",
+                    "name": "type",
+                    "serialized_name": "Type"
+                },
+                {
+                    "type": "date",
+                    "name": "created_at",
+                    "serialized_name": "createdAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "date",
+                    "name": "updated_at",
+                    "serialized_name": "updatedAt",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                },
+                {
+                    "type": "string",
+                    "name": "id",
+                    "serialized_name": "Id"
+                }
+            ]
+        }
+    ]
+}
