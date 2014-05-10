@@ -82,6 +82,7 @@ public class ContentProviderWriter {
                 tableContext.put("tableName", table.getTableClassName());
                 tableContext.put("fields", table.getFields());
                 tableContext.put("hasDateType", table.getHasDateType());
+                tableContext.put("hasSerializedNames", table.getHasSerializedNames());
                 writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
                 writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
             }
