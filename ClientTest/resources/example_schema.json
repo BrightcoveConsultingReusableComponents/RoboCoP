@@ -49,7 +49,8 @@
                     "serialized_name": "Thumbnail"
                 },
                 {
-                    "type": "string",
+                    "type": "array",
+                    "array_type": "String",
                     "name": "genres",
                     "serialized_name": "Genres"
                 },

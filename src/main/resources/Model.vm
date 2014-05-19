@@ -2,17 +2,27 @@ package ${packageName}.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-
-#if($hasSerializedNames)
-import com.google.gson.annotations.SerializedName;
+#if($hasArrayType || $hasSerializedNames)
 
 #end
+#if($hasArrayType)
+import com.google.gson.Gson;
+#end
+#if($hasSerializedNames)
+import com.google.gson.annotations.SerializedName;
+#end
+#if($hasArrayType)
+import com.google.gson.reflect.TypeToken;
+#end
+
 import ${packageName}.database.table.${tableName}Table;
 
+#if($hasArrayType)
+import java.lang.reflect.Type;
+#end
 #if($hasDateType)
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 #end
 import java.util.ArrayList;
 #if($hasDateType)
@@ -81,12 +91,26 @@ public class ${tableName} {
 
     public ContentValues getContentValues() {
         if (mValues.size() == 0) {
+#if($hasArrayType)
+            Gson gson = new Gson();
+            Type listType;
+            String jsonString;
+
+#end
             if(mRowId > 0) {
                 mValues.put(${tableName}Table._ID, mRowId);
             }
 #foreach ($field in $fields)
 #if($field)
+#if(${field.getIsArrayType()})
+
+            listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+            jsonString = gson.toJson(${field.getPrivateVariableName()}, listType);
+            mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+
+#else
             mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
+#end
 #end
 #end
         }
@@ -112,8 +136,22 @@ public class ${tableName} {
 #end
     public void set${field.getNameAsTitleCase()}(${field.getJavaTypeString()} ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getFieldName()};
+#if(${field.getIsArrayType()})
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+        String jsonString = gson.toJson(${field.getFieldName()}, listType);
+        mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+#else
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+#end
     }
+#if(${field.getIsArrayType()})
+    public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+        ${field.getPrivateVariableName()} = gson.fromJson(${field.getFieldName()}, listType);
+    }
+#end
 
 #if(!${field.getIsDateType()})
     public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
