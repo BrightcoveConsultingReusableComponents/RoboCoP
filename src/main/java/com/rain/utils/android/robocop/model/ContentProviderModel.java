@@ -25,6 +25,9 @@ public class ContentProviderModel {
     @SerializedName("tables")
     private List<ContentProviderTableModel> mTables;
 
+    @SerializedName("classes")
+    private List<ContentProviderClassModel> mModelClasses;
+
     @SerializedName("relationships")
     private List<ContentProviderRelationshipModel> mRelationships;
 
@@ -43,6 +46,10 @@ public class ContentProviderModel {
 
     public List<ContentProviderTableModel> getTables() {
         return mTables;
+    }
+
+    public List<ContentProviderClassModel> getClasses() {
+        return mModelClasses;
     }
 
     public String getPackage() {

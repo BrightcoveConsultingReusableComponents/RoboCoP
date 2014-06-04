@@ -1,6 +1,7 @@
 package com.rain.utils.android.robocop.generator;
 
 import com.google.gson.Gson;
+import com.rain.utils.android.robocop.model.ContentProviderClassModel;
 import com.rain.utils.android.robocop.model.ContentProviderModel;
 import com.rain.utils.android.robocop.model.ContentProviderTableModel;
 
@@ -40,8 +41,7 @@ public class ContentProviderWriter {
     }
 
     public void createContentProvider(ContentProviderModel contentProviderModel, String sourcePath) {
-        //clear out any generated source folders
-        //the provider path
+        // Clear out any generated source folders
         final String providerPath = getFilePath(sourcePath, contentProviderModel.getPackage(), "provider");
         removeDirectoryContents(providerPath);
         final String providerXMLPath = getFilePath(sourcePath, contentProviderModel.getPackage(), null);
@@ -64,6 +64,7 @@ public class ContentProviderWriter {
             baseContext.put("packageName", contentProviderModel.getPackage());
             baseContext.put("providerModel", contentProviderModel);
 
+            // Create Content Provider class and AndroidManifest XML definition
             VelocityContext providerContext = new VelocityContext(baseContext);
             providerContext.put("providerName", contentProviderModel.getProviderName());
             providerContext.put("tables", contentProviderModel.getTables());
@@ -71,10 +72,24 @@ public class ContentProviderWriter {
             writeFile(engine, providerContext, "ContentProvider.vm", providerPath, "/" + contentProviderModel.getProviderName() + "Provider.java");
             writeFile(engine, providerContext, "ProviderXML.vm", providerXMLPath, "/content-provider.xml");
 
+            // Create database class
             VelocityContext databaseContext = new VelocityContext(providerContext);
             databaseContext.put("databaseVersion", contentProviderModel.getDatabaseVersion());
             writeFile(engine, databaseContext, "Database.vm", databasePath, "/" + contentProviderModel.getProviderName() + "Database.java");
 
+            // Create all simple class models
+            for(ContentProviderClassModel classModel : contentProviderModel.getClasses()) {
+                VelocityContext classContext = new VelocityContext(baseContext);
+                classContext.put("class", classModel);
+                classContext.put("className", classModel.getClassName());
+                classContext.put("fields", classModel.getFields());
+                classContext.put("hasDateType", classModel.getHasDateType());
+                classContext.put("hasArrayType", classModel.getHasArrayType());
+                classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
+                writeFile(engine, classContext, "Class.vm", modelPath, "/" + classModel.getClassName() + ".java");
+            }
+
+            // Create all tables and associated model objects
             for (ContentProviderTableModel table : contentProviderModel.getTables()) {
                 VelocityContext tableContext = new VelocityContext(baseContext);
                 tableContext.put("table", table);

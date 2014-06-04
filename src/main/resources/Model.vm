@@ -1,4 +1,6 @@
 package ${packageName}.model;
+## IMPORTS
+## Declare all imports in alphabetical order.
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -32,8 +34,12 @@ import java.util.List;
 #if($hasDateType)
 import java.util.Locale;
 #end
+## CLASS DECLARATION
+## Declare the class name.
 
 public class ${tableName} {
+## PRIVATE MEMBER VARIABLES
+## Declare all private member variables for this class.
     private long mRowId;
 #foreach( $field in $fields )
 #if($field)
@@ -45,6 +51,8 @@ public class ${tableName} {
 #end
 #end
 
+## DATE FORMATS
+## Declare static fields for any potential date formats.
 #foreach( $field in $fields )
 #if($field)
 #if(${field.getIsDateType()})
@@ -52,6 +60,8 @@ public class ${tableName} {
 #end
 #end
 #end
+## FOREIGN KEYS
+## Declare any foreign keys
 #if( $participatingRelationships )
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKey = $relationship.getForeignKeyPrivateVariableNameForTable($table) )
@@ -63,6 +73,8 @@ public class ${tableName} {
 
     private ContentValues mValues = new ContentValues();
 
+## CONSTRUCTOR
+## Declare basic constructors
     public ${tableName}() {}
 
     public ${tableName}(final Cursor cursor) {
@@ -89,6 +101,8 @@ public class ${tableName} {
 #end
     }
 
+## CONTENT VALUES GETTER
+## Create method that returns all values as a ContentValues object
     public ContentValues getContentValues() {
         if (mValues.size() == 0) {
 #if($hasArrayType)
@@ -108,6 +122,10 @@ public class ${tableName} {
             jsonString = gson.toJson(${field.getPrivateVariableName()}, listType);
             mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
 
+#elseif(${field.getIsClass()})
+            mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()}.toString());
+#elseif(${field.getIsDateType()})
+            mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()}).getTime());
 #else
             mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
 #end
@@ -126,11 +144,24 @@ public class ${tableName} {
         return mRowId;
     }
 
+## SETTERS
+## Declare public setter methods.
 #foreach ($field in $fields)
 #if($field)
 #if(${field.getIsDateType()})
     public void set${field.getNameAsTitleCase()}(Date ${field.getFieldName()}) {
         set${field.getNameAsTitleCase()}(convertDateToString(${field.getFieldName()}, ${field.getStaticTimeFormatName()}));
+    }
+
+    public void set${field.getNameAsTitleCase()}(long ${field.getFieldName()}) {
+        set${field.getNameAsTitleCase()}(new Date(${field.getFieldName()}));
+    }
+
+#end
+#if(${field.getIsClass()})
+    public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
+        ${field.getPrivateVariableName()} = ${field.getJavaTypeString()}.fromJson(${field.getFieldName()});
+        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
     }
 
 #end
@@ -141,11 +172,16 @@ public class ${tableName} {
         Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
         String jsonString = gson.toJson(${field.getFieldName()}, listType);
         mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+#elseif(${field.getIsClass()})
+        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
+#elseif(${field.getIsDateType()})
+        mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()}).getTime());
 #else
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
 #end
     }
 #if(${field.getIsArrayType()})
+
     public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
         Gson gson = new Gson();
         Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
@@ -153,15 +189,16 @@ public class ${tableName} {
     }
 #end
 
-#if(!${field.getIsDateType()})
-    public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
-        return ${field.getPrivateVariableName()};
-    }
-
-#end
+## GETTERS
+## Declare public getter methods.
 #if(${field.getIsDateType()})
     public Date get${field.getNameAsTitleCase()}() {
-        return convertDateFromString(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+        return convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+    }
+
+#else
+    public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
+        return ${field.getPrivateVariableName()};
     }
 
 #end
@@ -197,10 +234,11 @@ public class ${tableName} {
 
         return list;
     }
+## PRIVATE METHODS
 #if($hasDateType)
 
 
-    private Date convertDateFromString(String date, String format) {
+    private Date convertStringToDate(String date, String format) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.US);
         try {
             return simpleDateFormat.parse(date);

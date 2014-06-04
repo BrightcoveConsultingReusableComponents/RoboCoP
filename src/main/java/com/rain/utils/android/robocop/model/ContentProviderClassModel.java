@@ -2,16 +2,9 @@ package com.rain.utils.android.robocop.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: dustin
- * Date: 1/15/14
- * Time: 9:46 AM
- */
-public class ContentProviderTableModel {
+public class ContentProviderClassModel {
 
     public static final String STRING = "string";
     public static final String DOUBLE = "double";
@@ -20,35 +13,19 @@ public class ContentProviderTableModel {
     public static final String LONG = "long";
     public static final String DATE = "date";
     public static final String ARRAY = "array";
-    public static final String[] FIELD_TYPES = {
-            STRING, DOUBLE, INT, BOOLEAN,
-            LONG, DATE, ARRAY
-    };
 
     @SerializedName("name")
-    private String mTableName;
+    private String mClassName;
 
     @SerializedName("members")
-    private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
+    private List<ContentProviderClassFieldModel> mFields;
 
-    public ContentProviderTableModel(String tableName) {
-        mTableName = tableName;
+    public String getClassName() {
+        return mClassName;
     }
 
-    public List<ContentProviderTableFieldModel> getFields() {
+    public List<ContentProviderClassFieldModel> getFields() {
         return mFields;
-    }
-
-    public String getTableName() {
-        return mTableName;
-    }
-
-    public String getTableClassName() {
-        return StringUtils.convertToTitleCase(mTableName);
-    }
-
-    public String getTableConstantName() {
-        return StringUtils.getConstantString(mTableName);
     }
 
     public String getHasDateType() {
@@ -60,22 +37,22 @@ public class ContentProviderTableModel {
     }
 
     private String getHasType(String type) {
-        for (ContentProviderTableFieldModel field : mFields) {
-            if (field.mFieldType.toLowerCase().equals(type))
+        for (ContentProviderClassFieldModel field : mFields) {
+            if (field.mFieldType.equalsIgnoreCase(type))
                 return Boolean.TRUE.toString();
         }
         return null;
     }
 
     public String getHasSerializedNames() {
-        for (ContentProviderTableFieldModel field : mFields) {
+        for (ContentProviderClassFieldModel field : mFields) {
             if (field.mSerializedName != null && field.mSerializedName.length() > 0)
                 return Boolean.TRUE.toString();
         }
         return null;
     }
 
-    public static class ContentProviderTableFieldModel {
+    public static class ContentProviderClassFieldModel {
 
         @SerializedName("type")
         private String mFieldType;
@@ -108,16 +85,6 @@ public class ContentProviderTableModel {
             return StringUtils.getConstantString(mFieldName);
         }
 
-        public String getTypeString() {
-            if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
-                return "INTEGER";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DOUBLE) || mFieldType.equals(DATE)) {
-                return "NUMERIC";
-            } else {
-                return "TEXT";
-            }
-        }
-
         public String getJavaTypeString() {
             String typeLower = mFieldType.toLowerCase();
             if (typeLower.equals(BOOLEAN)) {
@@ -139,20 +106,13 @@ public class ContentProviderTableModel {
         public String getJavaTypeStringGetter() {
             if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
                 return "getInt";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DATE)) {
+            } else if (mFieldType.equals(LONG)) {
                 return "getLong";
             } else if(mFieldType.equals(DOUBLE)) {
                 return "getDouble";
             } else {
                 return "getString";
             }
-        }
-
-        public String getBooleanComparison() {
-            if (mFieldType.equals(BOOLEAN)) {
-                return " == 1";
-            }
-            return "";
         }
 
         public String getPrivateVariableName() {
@@ -182,18 +142,5 @@ public class ContentProviderTableModel {
         public String getSerializedName() {
             return mSerializedName;
         }
-
-        public String getIsClass() {
-
-            for (String type : FIELD_TYPES) {
-                if (mFieldType.equalsIgnoreCase(type)) return null;
-            }
-            return Boolean.TRUE.toString();
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return ((ContentProviderTableModel)o).getTableName().equals(getTableName());
     }
 }

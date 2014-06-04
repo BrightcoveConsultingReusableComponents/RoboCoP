@@ -2,6 +2,24 @@
     "packageName": "com.brightcove.tinasample.data",
     "providerName": "parse",
     "databaseVersion": 1,
+    "classes": [
+        {
+            "name": "IsoDate",
+            "members": [
+                {
+                    "type": "string",
+                    "name": "type",
+                    "serialized_name": "__type"
+                },
+                {
+                    "type": "date",
+                    "name": "date",
+                    "serialized_name": "iso",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+            ]
+        }
+    ],
     "tables": [
         {
             "name": "video",
@@ -80,10 +98,9 @@
                     "serialized_name": "TrailerId"
                 },
                 {
-                    "type": "date",
+                    "type": "IsoDate",
                     "name": "released",
-                    "serialized_name": "Released",
-                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                    "serialized_name": "Released"
                 },
                 {
                     "type": "long",
