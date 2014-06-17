@@ -185,6 +185,7 @@ public class ${tableName} {
 #end
     public void set${field.getNameAsTitleCase()}(${field.getJavaTypeString()} ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getFieldName()};
+#if($tableName)
 #if(${field.getIsArrayType()})
         Gson gson = new Gson();
         Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
@@ -192,10 +193,11 @@ public class ${tableName} {
         mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
 #elseif(${field.getIsClass()})
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
-#elseif(${field.getIsDateType()} && $tableName)
+#elseif(${field.getIsDateType()})
         mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()}).getTime());
-#elseif($tableName)
+#else
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+#end
 #end
     }
 #if(${field.getIsArrayType()})
