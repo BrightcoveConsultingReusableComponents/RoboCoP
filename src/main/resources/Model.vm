@@ -1,13 +1,15 @@
 package ${packageName}.model;
 ## IMPORTS
 ## Declare all imports in alphabetical order.
+#if($tableName)
 
 import android.content.ContentValues;
 import android.database.Cursor;
+#end
 #if($hasArrayType || $hasSerializedNames)
 
 #end
-#if($hasArrayType)
+#if($hasArrayType || $className)
 import com.google.gson.Gson;
 #end
 #if($hasSerializedNames)
@@ -16,8 +18,10 @@ import com.google.gson.annotations.SerializedName;
 #if($hasArrayType)
 import com.google.gson.reflect.TypeToken;
 #end
+#if($tableName)
 
 import ${packageName}.database.table.${tableName}Table;
+#end
 
 #if($hasArrayType)
 import java.lang.reflect.Type;
@@ -37,10 +41,16 @@ import java.util.Locale;
 ## CLASS DECLARATION
 ## Declare the class name.
 
+#if($className)
+public class ${className} {
+#elseif($tableName)
 public class ${tableName} {
+#end
 ## PRIVATE MEMBER VARIABLES
 ## Declare all private member variables for this class.
+#if($tableName)
     private long mRowId;
+#end
 #foreach( $field in $fields )
 #if($field)
 #if(${field.getSerializedName()})
@@ -70,11 +80,17 @@ public class ${tableName} {
 #end
 #end
 #end
+#if($tableName)
 
     private ContentValues mValues = new ContentValues();
+#end
 
 ## CONSTRUCTOR
 ## Declare basic constructors
+#if($className)
+    public ${className}() {}
+
+#elseif($tableName)
     public ${tableName}() {}
 
     public ${tableName}(final Cursor cursor) {
@@ -143,7 +159,7 @@ public class ${tableName} {
     public Long getRowId() {
         return mRowId;
     }
-
+#end
 ## SETTERS
 ## Declare public setter methods.
 #foreach ($field in $fields)
@@ -161,7 +177,9 @@ public class ${tableName} {
 #if(${field.getIsClass()})
     public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getJavaTypeString()}.fromJson(${field.getFieldName()});
+#if($tableName)
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+#end
     }
 
 #end
@@ -174,9 +192,9 @@ public class ${tableName} {
         mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
 #elseif(${field.getIsClass()})
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
-#elseif(${field.getIsDateType()})
+#elseif(${field.getIsDateType()} && $tableName)
         mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()}).getTime());
-#else
+#elseif($tableName)
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
 #end
     }
@@ -223,6 +241,7 @@ public class ${tableName} {
 #end
 #end
 #end
+#if($tableName)
     public static List<${tableName}> listFromCursor(Cursor cursor) {
         List<${tableName}> list = new ArrayList<${tableName}>();
 
@@ -234,6 +253,24 @@ public class ${tableName} {
 
         return list;
     }
+#end
+#if($className)
+## TOSTRING METHOD
+## Declare method that converts object to JSON
+
+    @Override
+    public String toString() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+## FROMSTRING METHOD
+## Declare method that creates class instance from JSON
+    public static ${className} fromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, ${className}.class);
+    }
+#end
 ## PRIVATE METHODS
 #if($hasDateType)
 

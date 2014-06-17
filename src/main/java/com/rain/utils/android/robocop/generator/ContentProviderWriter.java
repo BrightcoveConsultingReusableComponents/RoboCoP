@@ -1,7 +1,6 @@
 package com.rain.utils.android.robocop.generator;
 
 import com.google.gson.Gson;
-import com.rain.utils.android.robocop.model.ContentProviderClassModel;
 import com.rain.utils.android.robocop.model.ContentProviderModel;
 import com.rain.utils.android.robocop.model.ContentProviderTableModel;
 
@@ -33,6 +32,7 @@ public class ContentProviderWriter {
         Gson gson = new Gson();
         try {
             ContentProviderModel model = gson.fromJson(readFile(schemaPath), ContentProviderModel.class);
+
             model.inflateRelationships();
             createContentProvider(model, sourcePath);
         } catch (IOException e) {
@@ -78,15 +78,15 @@ public class ContentProviderWriter {
             writeFile(engine, databaseContext, "Database.vm", databasePath, "/" + contentProviderModel.getProviderName() + "Database.java");
 
             // Create all simple class models
-            for(ContentProviderClassModel classModel : contentProviderModel.getClasses()) {
+            for(ContentProviderTableModel classModel : contentProviderModel.getClasses()) {
                 VelocityContext classContext = new VelocityContext(baseContext);
                 classContext.put("class", classModel);
-                classContext.put("className", classModel.getClassName());
+                classContext.put("className", classModel.getName());
                 classContext.put("fields", classModel.getFields());
                 classContext.put("hasDateType", classModel.getHasDateType());
                 classContext.put("hasArrayType", classModel.getHasArrayType());
                 classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
-                writeFile(engine, classContext, "Class.vm", modelPath, "/" + classModel.getClassName() + ".java");
+                writeFile(engine, classContext, "Model.vm", modelPath, "/" + classModel.getName() + ".java");
             }
 
             // Create all tables and associated model objects

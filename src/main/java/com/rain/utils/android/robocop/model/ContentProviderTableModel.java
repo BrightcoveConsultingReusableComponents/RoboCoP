@@ -26,29 +26,29 @@ public class ContentProviderTableModel {
     };
 
     @SerializedName("name")
-    private String mTableName;
+    private String mName;
 
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
     public ContentProviderTableModel(String tableName) {
-        mTableName = tableName;
+        mName = tableName;
     }
 
     public List<ContentProviderTableFieldModel> getFields() {
         return mFields;
     }
 
-    public String getTableName() {
-        return mTableName;
+    public String getName() {
+        return mName;
     }
 
     public String getTableClassName() {
-        return StringUtils.convertToTitleCase(mTableName);
+        return StringUtils.convertToTitleCase(mName);
     }
 
     public String getTableConstantName() {
-        return StringUtils.getConstantString(mTableName);
+        return StringUtils.getConstantString(mName);
     }
 
     public String getHasDateType() {
@@ -194,6 +194,6 @@ public class ContentProviderTableModel {
 
     @Override
     public boolean equals(Object o) {
-        return ((ContentProviderTableModel)o).getTableName().equals(getTableName());
+        return ((ContentProviderTableModel)o).getName().equals(getName());
     }
 }
