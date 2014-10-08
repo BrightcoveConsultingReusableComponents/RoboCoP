@@ -25,6 +25,9 @@ public class ContentProviderModel {
     @SerializedName("tables")
     private List<ContentProviderTableModel> mTables;
 
+    @SerializedName("classes")
+    private List<ContentProviderTableModel> mModelClasses;
+
     @SerializedName("relationships")
     private List<ContentProviderRelationshipModel> mRelationships;
 
@@ -43,6 +46,10 @@ public class ContentProviderModel {
 
     public List<ContentProviderTableModel> getTables() {
         return mTables;
+    }
+
+    public List<ContentProviderTableModel> getClasses() {
+        return mModelClasses;
     }
 
     public String getPackage() {
@@ -84,10 +91,10 @@ public class ContentProviderModel {
                     if (leftTable != null && rightTable != null) {
                         break;
                     }
-                    if (table.getTableName().equals(leftTableName)) {
+                    if (table.getName().equals(leftTableName)) {
                         leftTable = table;
                     }
-                    if (table.getTableName().equals(rightTableName)) {
+                    if (table.getName().equals(rightTableName)) {
                         rightTable = table;
                     }
                 }
