@@ -13,39 +13,55 @@ import java.util.List;
  */
 public class ContentProviderTableModel {
 
+    public static final String STRING = "string";
+    public static final String DOUBLE = "double";
+    public static final String INT = "int";
+    public static final String BOOLEAN = "boolean";
+    public static final String LONG = "long";
+    public static final String DATE = "date";
+    public static final String ARRAY = "array";
+    public static final String[] FIELD_TYPES = {
+            STRING, DOUBLE, INT, BOOLEAN,
+            LONG, DATE, ARRAY
+    };
+
     @SerializedName("name")
-    private String mTableName;
+    private String mName;
 
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
     public ContentProviderTableModel(String tableName) {
-        mTableName = tableName;
+        mName = tableName;
     }
 
     public List<ContentProviderTableFieldModel> getFields() {
         return mFields;
     }
 
-    public void addField(String fieldName, String type, String format, String serializedName) {
-        mFields.add(new ContentProviderTableFieldModel(type, fieldName, format, serializedName));
-    }
-
-    public String getTableName() {
-        return mTableName;
+    public String getName() {
+        return mName;
     }
 
     public String getTableClassName() {
-        return StringUtils.convertToTitleCase(mTableName);
+        return StringUtils.convertToTitleCase(mName);
     }
 
     public String getTableConstantName() {
-        return StringUtils.getConstantString(mTableName);
+        return StringUtils.getConstantString(mName);
     }
 
     public String getHasDateType() {
+        return getHasType(DATE);
+    }
+
+    public String getHasArrayType() {
+        return getHasType(ARRAY);
+    }
+
+    private String getHasType(String type) {
         for (ContentProviderTableFieldModel field : mFields) {
-            if (field.mFieldType.toLowerCase().equals("date"))
+            if (field.mFieldType.toLowerCase().equals(type))
                 return Boolean.TRUE.toString();
         }
         return null;
@@ -61,13 +77,6 @@ public class ContentProviderTableModel {
 
     public static class ContentProviderTableFieldModel {
 
-        public static final String STRING = "string";
-        public static final String DOUBLE = "double";
-        public static final String INT = "int";
-        public static final String BOOLEAN = "boolean";
-        public static final String LONG = "long";
-        public static final String DATE = "date";
-
         @SerializedName("type")
         private String mFieldType;
 
@@ -80,19 +89,15 @@ public class ContentProviderTableModel {
         @SerializedName("serialized_name")
         private String mSerializedName;
 
-        public ContentProviderTableFieldModel(
-                String fieldType,
-                String fieldName,
-                String fieldFormat,
-                String serializedName) {
-            mFieldType = fieldType;
-            mFieldName = fieldName;
-            mFieldFormat = fieldFormat;
-            mSerializedName = serializedName;
-        }
+        @SerializedName("array_type")
+        private String mArrayType;
 
         public String getFieldType() {
             return mFieldType;
+        }
+
+        public String getFieldArrayType() {
+            return mArrayType;
         }
 
         public String getFieldName() {
@@ -106,7 +111,7 @@ public class ContentProviderTableModel {
         public String getTypeString() {
             if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
                 return "INTEGER";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DOUBLE)) {
+            } else if (mFieldType.equals(LONG) || mFieldType.equals(DOUBLE) || mFieldType.equals(DATE)) {
                 return "NUMERIC";
             } else {
                 return "TEXT";
@@ -121,15 +126,20 @@ public class ContentProviderTableModel {
                 return "int";
             } else if (typeLower.equals(LONG) || typeLower.equals(DOUBLE)) {
                 return "double";
-            } else {
+            } else if (typeLower.equals(ARRAY)) {
+                return "List<" + mArrayType + ">";
+            } else if (typeLower.equals(STRING) || typeLower.equals(DATE)) {
                 return "String";
+            } else {
+                // Assume type is a generated class
+                return mFieldType;
             }
         }
 
         public String getJavaTypeStringGetter() {
             if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
                 return "getInt";
-            } else if (mFieldType.equals(LONG)) {
+            } else if (mFieldType.equals(LONG) || mFieldType.equals(DATE)) {
                 return "getLong";
             } else if(mFieldType.equals(DOUBLE)) {
                 return "getDouble";
@@ -157,6 +167,10 @@ public class ContentProviderTableModel {
             return mFieldType.toLowerCase().equals(DATE) ? Boolean.TRUE.toString() : null;
         }
 
+        public String getIsArrayType() {
+            return mFieldType.toLowerCase().equals(ARRAY) ? Boolean.TRUE.toString() : null;
+        }
+
         public String getStaticTimeFormatName() {
             return mFieldName.toUpperCase() + "_TIME_FORMAT";
         }
@@ -168,10 +182,18 @@ public class ContentProviderTableModel {
         public String getSerializedName() {
             return mSerializedName;
         }
+
+        public String getIsClass() {
+
+            for (String type : FIELD_TYPES) {
+                if (mFieldType.equalsIgnoreCase(type)) return null;
+            }
+            return Boolean.TRUE.toString();
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        return ((ContentProviderTableModel)o).getTableName().equals(getTableName());
+        return ((ContentProviderTableModel)o).getName().equals(getName());
     }
 }
