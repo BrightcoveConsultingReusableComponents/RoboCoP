@@ -12,7 +12,7 @@ import android.database.Cursor;
 #if($hasArrayType || $className)
 import com.google.gson.Gson;
 #end
-#if($hasSerializedNames)
+#if($serializeAllNames || $hasSerializedNames)
 import com.google.gson.annotations.SerializedName;
 #end
 #if($hasArrayType)
@@ -56,6 +56,9 @@ public class ${tableName} {
 #if(${field.getSerializedName()})
 
     @SerializedName("$field.getSerializedName()")
+#elseif($serializeAllNames)
+
+    @SerializedName("$field.getFieldName()")
 #end
     private ${field.getJavaTypeString()} ${field.getPrivateVariableName()};
 #end

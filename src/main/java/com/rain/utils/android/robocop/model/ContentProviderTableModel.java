@@ -28,6 +28,9 @@ public class ContentProviderTableModel {
     @SerializedName("name")
     private String mName;
 
+    @SerializedName("serialize_all_names")
+    private String mSerializeAllNames;
+
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
@@ -59,6 +62,12 @@ public class ContentProviderTableModel {
         return getHasType(ARRAY);
     }
 
+    public String getSerializeAllNames() {
+        if (mSerializeAllNames != null && mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
+            return Boolean.TRUE.toString();
+        return null;
+    }
+
     private String getHasType(String type) {
         for (ContentProviderTableFieldModel field : mFields) {
             if (field.mFieldType.toLowerCase().equals(type))
@@ -68,6 +77,11 @@ public class ContentProviderTableModel {
     }
 
     public String getHasSerializedNames() {
+        // If the we've been told to serialize all names, then yes, we have serialized names
+        if (Boolean.TRUE.toString().equals(getSerializeAllNames()))
+            return Boolean.TRUE.toString();
+
+        // Iterate through all declared fields and see if any are serialized.
         for (ContentProviderTableFieldModel field : mFields) {
             if (field.mSerializedName != null && field.mSerializedName.length() > 0)
                 return Boolean.TRUE.toString();

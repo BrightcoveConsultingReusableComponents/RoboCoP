@@ -23,6 +23,7 @@
     "tables": [
         {
             "name": "video",
+            "serialize_all_names": "true",
             "members": [
                 {
                     "type": "string",
@@ -48,8 +49,7 @@
                 },
                 {
                     "type": "string",
-                    "name": "title",
-                    "serialized_name": "Title"
+                    "name": "title"
                 },
                 {
                     "type": "int",
