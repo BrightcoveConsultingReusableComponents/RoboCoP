@@ -1,18 +1,34 @@
 package ${packageName}.model;
+## IMPORTS
+## Declare all imports in alphabetical order.
+#if($tableName)
 
 import android.content.ContentValues;
 import android.database.Cursor;
-
-#if($hasSerializedNames)
-import com.google.gson.annotations.SerializedName;
+#end
+#if($hasArrayType || $hasSerializedNames)
 
 #end
-import ${packageName}.database.table.${tableName}Table;
+#if($hasArrayType || $className)
+import com.google.gson.Gson;
+#end
+#if($hasSerializedNames)
+import com.google.gson.annotations.SerializedName;
+#end
+#if($hasArrayType)
+import com.google.gson.reflect.TypeToken;
+#end
+#if($tableName)
 
+import ${packageName}.database.table.${tableName}Table;
+#end
+
+#if($hasArrayType)
+import java.lang.reflect.Type;
+#end
 #if($hasDateType)
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 #end
 import java.util.ArrayList;
 #if($hasDateType)
@@ -22,19 +38,34 @@ import java.util.List;
 #if($hasDateType)
 import java.util.Locale;
 #end
+## CLASS DECLARATION
+## Declare the class name.
 
+#if($className)
+public class ${className} {
+#elseif($tableName)
 public class ${tableName} {
+#end
+## PRIVATE MEMBER VARIABLES
+## Declare all private member variables for this class.
+#if($tableName)
     private long mRowId;
+#end
 #foreach( $field in $fields )
 #if($field)
 #if(${field.getSerializedName()})
 
     @SerializedName("$field.getSerializedName()")
+#elseif($serializeAllNames)
+
+    @SerializedName("$field.getFieldName()")
 #end
     private ${field.getJavaTypeString()} ${field.getPrivateVariableName()};
 #end
 #end
 
+## DATE FORMATS
+## Declare static fields for any potential date formats.
 #foreach( $field in $fields )
 #if($field)
 #if(${field.getIsDateType()})
@@ -42,6 +73,8 @@ public class ${tableName} {
 #end
 #end
 #end
+## FOREIGN KEYS
+## Declare any foreign keys
 #if( $participatingRelationships )
 #foreach( $relationship in $participatingRelationships )
 #set( $foreignKey = $relationship.getForeignKeyPrivateVariableNameForTable($table) )
@@ -50,9 +83,17 @@ public class ${tableName} {
 #end
 #end
 #end
+#if($tableName)
 
     private ContentValues mValues = new ContentValues();
+#end
 
+## CONSTRUCTOR
+## Declare basic constructors
+#if($className)
+    public ${className}() {}
+
+#elseif($tableName)
     public ${tableName}() {}
 
     public ${tableName}(final Cursor cursor) {
@@ -79,14 +120,34 @@ public class ${tableName} {
 #end
     }
 
+## CONTENT VALUES GETTER
+## Create method that returns all values as a ContentValues object
     public ContentValues getContentValues() {
         if (mValues.size() == 0) {
+#if($hasArrayType)
+            Gson gson = new Gson();
+            Type listType;
+            String jsonString;
+
+#end
             if(mRowId > 0) {
                 mValues.put(${tableName}Table._ID, mRowId);
             }
 #foreach ($field in $fields)
 #if($field)
+#if(${field.getIsArrayType()})
+
+            listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+            jsonString = gson.toJson(${field.getPrivateVariableName()}, listType);
+            mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+
+#elseif(${field.getIsClass()})
+            mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()}.toString());
+#elseif(${field.getIsDateType()})
+            mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()}).getTime());
+#else
             mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
+#end
 #end
 #end
         }
@@ -101,7 +162,9 @@ public class ${tableName} {
     public Long getRowId() {
         return mRowId;
     }
-
+#end
+## SETTERS
+## Declare public setter methods.
 #foreach ($field in $fields)
 #if($field)
 #if(${field.getIsDateType()})
@@ -109,21 +172,56 @@ public class ${tableName} {
         set${field.getNameAsTitleCase()}(convertDateToString(${field.getFieldName()}, ${field.getStaticTimeFormatName()}));
     }
 
+    public void set${field.getNameAsTitleCase()}(long ${field.getFieldName()}) {
+        set${field.getNameAsTitleCase()}(new Date(${field.getFieldName()}));
+    }
+
+#end
+#if(${field.getIsClass()})
+    public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
+        ${field.getPrivateVariableName()} = ${field.getJavaTypeString()}.fromJson(${field.getFieldName()});
+#if($tableName)
+        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+#end
+    }
+
 #end
     public void set${field.getNameAsTitleCase()}(${field.getJavaTypeString()} ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getFieldName()};
+#if($tableName)
+#if(${field.getIsArrayType()})
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+        String jsonString = gson.toJson(${field.getFieldName()}, listType);
+        mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+#elseif(${field.getIsClass()})
+        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
+#elseif(${field.getIsDateType()})
+        mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()}).getTime());
+#else
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
-    }
-
-#if(!${field.getIsDateType()})
-    public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
-        return ${field.getPrivateVariableName()};
-    }
-
 #end
+#end
+    }
+#if(${field.getIsArrayType()})
+
+    public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
+        ${field.getPrivateVariableName()} = gson.fromJson(${field.getFieldName()}, listType);
+    }
+#end
+
+## GETTERS
+## Declare public getter methods.
 #if(${field.getIsDateType()})
     public Date get${field.getNameAsTitleCase()}() {
-        return convertDateFromString(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+        return convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+    }
+
+#else
+    public ${field.getJavaTypeString()} get${field.getNameAsTitleCase()}() {
+        return ${field.getPrivateVariableName()};
     }
 
 #end
@@ -148,6 +246,7 @@ public class ${tableName} {
 #end
 #end
 #end
+#if($tableName)
     public static List<${tableName}> listFromCursor(Cursor cursor) {
         List<${tableName}> list = new ArrayList<${tableName}>();
 
@@ -159,10 +258,29 @@ public class ${tableName} {
 
         return list;
     }
+#end
+#if($className)
+## TOSTRING METHOD
+## Declare method that converts object to JSON
+
+    @Override
+    public String toString() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+## FROMSTRING METHOD
+## Declare method that creates class instance from JSON
+    public static ${className} fromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, ${className}.class);
+    }
+#end
+## PRIVATE METHODS
 #if($hasDateType)
 
 
-    private Date convertDateFromString(String date, String format) {
+    private Date convertStringToDate(String date, String format) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.US);
         try {
             return simpleDateFormat.parse(date);
