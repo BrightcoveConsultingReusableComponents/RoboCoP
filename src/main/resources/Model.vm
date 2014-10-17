@@ -12,7 +12,7 @@ import android.database.Cursor;
 #if($hasArrayType || $className)
 import com.google.gson.Gson;
 #end
-#if($serializeAllNames || $hasSerializedNames)
+#if($hasSerializedNames)
 import com.google.gson.annotations.SerializedName;
 #end
 #if($hasArrayType)
