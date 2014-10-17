@@ -86,6 +86,7 @@ public class ContentProviderWriter {
                 classContext.put("hasDateType", classModel.getHasDateType());
                 classContext.put("hasArrayType", classModel.getHasArrayType());
                 classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
+                classContext.put("serializeAllNames", classModel.getSerializeAllNames());
                 writeFile(engine, classContext, "Model.vm", modelPath, "/" + classModel.getName() + ".java");
             }
 
@@ -98,6 +99,7 @@ public class ContentProviderWriter {
                 tableContext.put("fields", table.getFields());
                 tableContext.put("hasDateType", table.getHasDateType());
                 tableContext.put("hasSerializedNames", table.getHasSerializedNames());
+                tableContext.put("serializeAllNames", table.getSerializeAllNames());
                 tableContext.put("hasArrayType", table.getHasArrayType());
                 writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
                 writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
