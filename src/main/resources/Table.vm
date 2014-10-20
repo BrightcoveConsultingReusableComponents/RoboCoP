@@ -12,7 +12,7 @@ public interface ${tableName}Table {
 #if ($field)
     String ${field.getConstantString()} = "${field.getConstantString().toLowerCase()}";
 #set ($allColumns = $allColumns + ", " + $field.getConstantString())
-#set ($tableCreate = $tableCreate + ", " + $field.getConstantString().toLowerCase() + " " + $field.getTypeString())
+#set ($tableCreate = $tableCreate + ", " + $field.getConstantString().toLowerCase() + " " + $field.getTypeString() + $field.getUniqueConstraint())
 #if (!$insertFields)
 #set ($insertFields = $field.getConstantString().toLowerCase())
 #set ($escapeFields = "?")
