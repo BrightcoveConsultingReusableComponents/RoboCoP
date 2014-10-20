@@ -28,7 +28,8 @@
                 {
                     "type": "string",
                     "name": "object_id",
-                    "serialized_name": "objectId"
+                    "serialized_name": "objectId",
+                    "constraint_unique": "true"
                 },
                 {
                     "type": "string",

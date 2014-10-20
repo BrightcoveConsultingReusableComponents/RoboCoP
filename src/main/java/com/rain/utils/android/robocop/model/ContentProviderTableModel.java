@@ -106,6 +106,9 @@ public class ContentProviderTableModel {
         @SerializedName("array_type")
         private String mArrayType;
 
+        @SerializedName("constraint_unique")
+        private String mConstraintUnique;
+
         public String getFieldType() {
             return mFieldType;
         }
@@ -183,6 +186,10 @@ public class ContentProviderTableModel {
 
         public String getIsArrayType() {
             return mFieldType.toLowerCase().equals(ARRAY) ? Boolean.TRUE.toString() : null;
+        }
+
+        public String getUniqueConstraint() {
+            return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintUnique) ? " UNIQUE" : "";
         }
 
         public String getStaticTimeFormatName() {
