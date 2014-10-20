@@ -6,6 +6,9 @@ package ${packageName}.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 #end
+#if($hasDateType)
+import android.text.TextUtils;
+#end
 #if($hasArrayType || $hasSerializedNames)
 
 #end
@@ -130,6 +133,10 @@ public class ${tableName} {
             String jsonString;
 
 #end
+#if($hasDateType)
+            Date date;
+
+#end
             if(mRowId > 0) {
                 mValues.put(${tableName}Table._ID, mRowId);
             }
@@ -144,7 +151,8 @@ public class ${tableName} {
 #elseif(${field.getIsClass()})
             mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()}.toString());
 #elseif(${field.getIsDateType()})
-            mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()}).getTime());
+            date = convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
+            if (date != null) mValues.put(${tableName}Table.${field.getConstantString()}, date.getTime());
 #else
             mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
 #end
@@ -197,7 +205,8 @@ public class ${tableName} {
 #elseif(${field.getIsClass()})
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
 #elseif(${field.getIsDateType()})
-        mValues.put(${tableName}Table.${field.getConstantString()}, convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()}).getTime());
+        Date date = convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()});
+        if (date != null) mValues.put(${tableName}Table.${field.getConstantString()}, date.getTime());
 #else
         mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
 #end
@@ -281,6 +290,9 @@ public class ${tableName} {
 
 
     private Date convertStringToDate(String date, String format) {
+        if (TextUtils.isEmpty(date) || TextUtils.isEmpty(format))
+            return null;
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.US);
         try {
             return simpleDateFormat.parse(date);
