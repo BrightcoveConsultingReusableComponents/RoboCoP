@@ -14,6 +14,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.SQLException;
 import android.net.Uri;
 
 import java.util.ArrayList;
@@ -208,6 +209,44 @@ public class ${providerName}Provider extends ContentProvider {
         }
 
         return null;
+    }
+
+    @Override
+    public final int bulkInsert(Uri uri, ContentValues[] values) {
+        int numValues = 0;
+        final SQLiteDatabase dbConnection = mDatabase.getWritableDatabase();
+        String tableName = null;
+
+        switch (URI_MATCHER.match(uri)) {
+#foreach( $table in $tables )
+#set( $tableNameCaps = $table.getTableConstantName() )
+            case ${tableNameCaps}_DIR:
+            case ${tableNameCaps}_ID:
+                tableName = ${table.getTableClassName()}Table.TABLE_NAME;
+                break;
+#end
+            default:
+                throw new IllegalArgumentException("Unsupported URI: " + uri);
+        }
+
+        dbConnection.beginTransaction();
+        for (ContentValues value : values) {
+            try {
+                dbConnection.insertOrThrow(tableName, null, value);
+                numValues++;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (numValues > 0) {
+            dbConnection.setTransactionSuccessful();
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        dbConnection.endTransaction();
+
+        return numValues;
     }
 
     @Override
