@@ -43,15 +43,15 @@ public class ${providerName}Provider extends ContentProvider {
 #set( $matcherIndex = 0 )
 #foreach( $table in $tables )
 #set( $tableName = $table.getTableConstantName() )
-    private static final int ${tableName}_DIR = ${matcherIndex};
+    protected static final int ${tableName}_DIR = ${matcherIndex};
 #set($matcherIndex = $matcherIndex+1)
-    private static final int ${tableName}_ID = ${matcherIndex};
+    protected static final int ${tableName}_ID = ${matcherIndex};
 
 #set($matcherIndex = $matcherIndex+1)
 #end
 #foreach( $relationship in $relationships )
     #set( $joinTableName = $relationship.getLeftTableConstantName() + "_JOIN_" + $relationship.getRightTableConstantName())
-    private static final int ${joinTableName}_DIR = ${matcherIndex};
+    protected static final int ${joinTableName}_DIR = ${matcherIndex};
 
     #set($matcherIndex = $matcherIndex+1)
 #end
