@@ -31,6 +31,9 @@ public class ContentProviderTableModel {
     @SerializedName("serialize_all_names")
     private String mSerializeAllNames;
 
+    @SerializedName("constrain_unique_multi_columns")
+    private String mConstrainUniqueColumns;
+
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
@@ -65,6 +68,11 @@ public class ContentProviderTableModel {
     public String getSerializeAllNames() {
         if (mSerializeAllNames != null && mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
             return Boolean.TRUE.toString();
+        return null;
+    }
+
+    public String getConstrainUniqueColumns() {
+        if (mConstrainUniqueColumns != null) return mConstrainUniqueColumns;
         return null;
     }
 
@@ -108,6 +116,9 @@ public class ContentProviderTableModel {
 
         @SerializedName("constraint_unique")
         private String mConstraintUnique;
+
+        @SerializedName("constraint_not_null")
+        private String mConstraintNotNull;
 
         public String getFieldType() {
             return mFieldType;
@@ -190,6 +201,10 @@ public class ContentProviderTableModel {
 
         public String getUniqueConstraint() {
             return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintUnique) ? " UNIQUE" : "";
+        }
+
+        public String getNotNullConstraint() {
+            return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintNotNull) ? " NOT NULL" : "";
         }
 
         public String getStaticTimeFormatName() {

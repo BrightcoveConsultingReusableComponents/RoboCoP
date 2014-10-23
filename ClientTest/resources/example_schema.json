@@ -24,6 +24,7 @@
         {
             "name": "video",
             "serialize_all_names": "true",
+            "constrain_unique_multi_columns": "object_id, video_type",
             "members": [
                 {
                     "type": "string",
@@ -40,7 +41,8 @@
                     "type": "date",
                     "name": "created_at",
                     "serialized_name": "createdAt",
-                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                    "constraint_not_null": "true"
                 },
                 {
                     "type": "date",
