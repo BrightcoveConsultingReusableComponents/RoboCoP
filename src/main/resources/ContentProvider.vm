@@ -13,8 +13,9 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 
 import java.util.ArrayList;
@@ -206,6 +207,8 @@ public class ${providerName}Provider extends ContentProvider {
                     onPostInsert(false, null, uri, values);
                     throw new IllegalArgumentException("Unsupported URI:" + uri);
             }
+        } catch (SQLiteConstraintException e) {
+            // Don't report this error.
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -244,6 +247,8 @@ public class ${providerName}Provider extends ContentProvider {
             try {
                 dbConnection.insertOrThrow(tableName, null, value);
                 numValues++;
+            } catch (SQLiteConstraintException e) {
+                // Don't report this error.
             } catch (SQLException e) {
                 e.printStackTrace();
             }
