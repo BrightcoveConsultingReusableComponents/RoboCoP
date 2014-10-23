@@ -37,8 +37,8 @@ public class ${providerName}Provider extends ContentProvider {
     public static final Uri ${joinTableName}_CONTENT_URI = Uri.withAppendedPath(${providerName}Provider.AUTHORITY_URI, ${joinTableClassName}Content.CONTENT_PATH);
 #end
 
-    private static final UriMatcher URI_MATCHER;
-    private ${providerName}Database mDatabase;
+    protected static final UriMatcher URI_MATCHER;
+    protected ${providerName}Database mDatabase;
 
 #set( $matcherIndex = 0 )
 #foreach( $table in $tables )
@@ -55,6 +55,9 @@ public class ${providerName}Provider extends ContentProvider {
 
     #set($matcherIndex = $matcherIndex+1)
 #end
+
+#set($matcherIndex = $matcherIndex - 1)
+    protected static final int LAST_MATCHER_ID = ${matcherIndex};
 
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -92,13 +95,13 @@ public class ${providerName}Provider extends ContentProvider {
 #end
 
     @Override
-    public final boolean onCreate() {
+    public boolean onCreate() {
         mDatabase = new ${providerName}Database(getContext());
         return true;
     }
 
     @Override
-    public final String getType(final Uri uri) {
+    public String getType(final Uri uri) {
         switch (URI_MATCHER.match(uri)) {
 #foreach( $table in $tables )
 #set( $tableNameCaps = $table.getTableConstantName() )
@@ -121,7 +124,7 @@ public class ${providerName}Provider extends ContentProvider {
     }
 
     @Override
-    public final Cursor query(final Uri uri, String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+    public Cursor query(final Uri uri, String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
         final SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         final SQLiteDatabase dbConnection = mDatabase.getReadableDatabase();
 
@@ -173,7 +176,7 @@ public class ${providerName}Provider extends ContentProvider {
     }
 
     @Override
-    public final Uri insert(final Uri uri, final ContentValues values) {
+    public Uri insert(final Uri uri, final ContentValues values) {
         final SQLiteDatabase dbConnection = mDatabase.getWritableDatabase();
 
         try {
@@ -195,11 +198,12 @@ public class ${providerName}Provider extends ContentProvider {
                     getContext().getContentResolver().notifyChange(${joinTableName}, null);
 #end
 #end
-
                     dbConnection.setTransactionSuccessful();
+                    onPostInsert(true, new${table.getTableClassName()}Uri, uri, values);
                     return new${table.getTableClassName()}Uri;
 #end
                 default :
+                    onPostInsert(false, null, uri, values);
                     throw new IllegalArgumentException("Unsupported URI:" + uri);
             }
         } catch (Exception e) {
@@ -207,15 +211,20 @@ public class ${providerName}Provider extends ContentProvider {
         } finally {
             dbConnection.endTransaction();
         }
+        onPostInsert(false, null, uri, values);
 
         return null;
     }
+    protected void onPostInsert(final boolean success, final Uri successUri, final Uri uri, final ContentValues values) {
+        /* No-op: Allow extending classes to override */
+    }
 
     @Override
-    public final int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(Uri uri, ContentValues[] values) {
         int numValues = 0;
         final SQLiteDatabase dbConnection = mDatabase.getWritableDatabase();
         String tableName = null;
+        boolean bSuccess = false;
 
         switch (URI_MATCHER.match(uri)) {
 #foreach( $table in $tables )
@@ -226,6 +235,7 @@ public class ${providerName}Provider extends ContentProvider {
                 break;
 #end
             default:
+                onPostBulkInsert(bSuccess, numValues, uri, values);
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
 
@@ -241,19 +251,25 @@ public class ${providerName}Provider extends ContentProvider {
 
         if (numValues > 0) {
             dbConnection.setTransactionSuccessful();
+            bSuccess = true;
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
         dbConnection.endTransaction();
+        onPostBulkInsert(bSuccess, numValues, uri, values);
 
         return numValues;
     }
+    protected void onPostBulkInsert(final boolean success, final int numValues, final Uri uri, final ContentValues[] values) {
+        /* No-op: Allow extending classes to override */
+    }
 
     @Override
-    public final int update(final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
+    public int update(final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
         final SQLiteDatabase dbConnection = mDatabase.getWritableDatabase();
         int updateCount = 0;
         List<Uri> joinUris = new ArrayList<Uri>();
+        boolean bSuccess = false;
 
         try {
             dbConnection.beginTransaction();
@@ -273,6 +289,7 @@ public class ${providerName}Provider extends ContentProvider {
 
 #end
 #end
+                    bSuccess = true;
                     dbConnection.setTransactionSuccessful();
                     break;
                 case ${tableNameCaps}_ID:
@@ -287,11 +304,13 @@ public class ${providerName}Provider extends ContentProvider {
 
 #end
 #end
+                   bSuccess = true;
                    dbConnection.setTransactionSuccessful();
                    break;
 
 #end
                 default :
+                    onPostUpdate(bSuccess, updateCount, uri, values, selection, selectionArgs);
                     throw new IllegalArgumentException("Unsupported URI:" + uri);
             }
         } finally {
@@ -300,21 +319,24 @@ public class ${providerName}Provider extends ContentProvider {
 
         if (updateCount > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
-
             for (Uri joinUri : joinUris) {
                 getContext().getContentResolver().notifyChange(joinUri, null);
             }
         }
 
+        onPostUpdate(bSuccess, updateCount, uri, values, selection, selectionArgs);
         return updateCount;
-
+    }
+    protected void onPostUpdate(final boolean success, final int numResults, final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
+        /* No-op: Allow extending classes to override */
     }
 
     @Override
-    public final int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+    public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
         final SQLiteDatabase dbConnection = mDatabase.getWritableDatabase();
         int deleteCount = 0;
         List<Uri> joinUris = new ArrayList<Uri>();
+        boolean bSuccess = false;
 
         try {
             dbConnection.beginTransaction();
@@ -334,6 +356,7 @@ public class ${providerName}Provider extends ContentProvider {
 
 #end
 #end
+                    bSuccess = true;
                     dbConnection.setTransactionSuccessful();
                     break;
                 case ${tableNameCaps}_ID:
@@ -346,11 +369,13 @@ public class ${providerName}Provider extends ContentProvider {
 
 #end
 #end
+                    bSuccess = true;
                     dbConnection.setTransactionSuccessful();
                     break;
 
 #end
                 default :
+                    onPostDelete(bSuccess, deleteCount, uri, selection, selectionArgs);
                     throw new IllegalArgumentException("Unsupported URI:" + uri);
             }
         } finally {
@@ -359,12 +384,15 @@ public class ${providerName}Provider extends ContentProvider {
 
         if (deleteCount > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
-
             for (Uri joinUri : joinUris) {
                 getContext().getContentResolver().notifyChange(joinUri, null);
             }
         }
 
+        onPostDelete(bSuccess, deleteCount, uri, selection, selectionArgs);
         return deleteCount;
+    }
+    protected void onPostDelete(final boolean success, final int numResults, final Uri uri, final String selection, final String[] selectionArgs) {
+        /* No-op: Allow extending classes to override */
     }
 }
