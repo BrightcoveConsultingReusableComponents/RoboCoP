@@ -5,14 +5,13 @@ public interface ${tableName}Table {
     String TABLE_NAME = "${tableNameLower}";
 
     String _ID = "_id";
-
 #set ($allColumns = "_ID")
 #set ($tableCreate = "_id INTEGER PRIMARY KEY AUTOINCREMENT")
 #foreach( $field in $fields )
 #if ($field)
     String ${field.getConstantString()} = "${field.getConstantString().toLowerCase()}";
 #set ($allColumns = $allColumns + ", " + $field.getConstantString())
-#set ($tableCreate = $tableCreate + ", " + $field.getConstantString().toLowerCase() + " " + $field.getTypeString() + $field.getUniqueConstraint())
+#set ($tableCreate = $tableCreate + ", " + $field.getConstantString().toLowerCase() + " " + $field.getTypeString() + $field.getUniqueConstraint() + $field.getNotNullConstraint())
 #if (!$insertFields)
 #set ($insertFields = $field.getConstantString().toLowerCase())
 #set ($escapeFields = "?")
@@ -35,6 +34,7 @@ public interface ${tableName}Table {
 
 #end
 #end
+
     String[] ALL_COLUMNS = new String[] {${allColumns}};
 
     String SQL_CREATE = "CREATE TABLE ${tableNameLower} ( ${tableCreate} )";

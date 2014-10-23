@@ -40,7 +40,8 @@
                     "type": "date",
                     "name": "created_at",
                     "serialized_name": "createdAt",
-                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                    "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                    "constraint_not_null": "true"
                 },
                 {
                     "type": "date",

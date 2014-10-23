@@ -109,6 +109,9 @@ public class ContentProviderTableModel {
         @SerializedName("constraint_unique")
         private String mConstraintUnique;
 
+        @SerializedName("constraint_not_null")
+        private String mConstraintNotNull;
+
         public String getFieldType() {
             return mFieldType;
         }
@@ -190,6 +193,10 @@ public class ContentProviderTableModel {
 
         public String getUniqueConstraint() {
             return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintUnique) ? " UNIQUE" : "";
+        }
+
+        public String getNotNullConstraint() {
+            return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintNotNull) ? " NOT NULL" : "";
         }
 
         public String getStaticTimeFormatName() {
