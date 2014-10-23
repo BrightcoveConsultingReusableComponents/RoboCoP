@@ -24,6 +24,7 @@
         {
             "name": "video",
             "serialize_all_names": "true",
+            "constrain_unique_multi_columns": "object_id, video_type",
             "members": [
                 {
                     "type": "string",

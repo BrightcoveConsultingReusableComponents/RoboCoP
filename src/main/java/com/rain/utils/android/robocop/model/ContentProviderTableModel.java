@@ -31,6 +31,9 @@ public class ContentProviderTableModel {
     @SerializedName("serialize_all_names")
     private String mSerializeAllNames;
 
+    @SerializedName("constrain_unique_multi_columns")
+    private String mConstrainUniqueColumns;
+
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
@@ -65,6 +68,11 @@ public class ContentProviderTableModel {
     public String getSerializeAllNames() {
         if (mSerializeAllNames != null && mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
             return Boolean.TRUE.toString();
+        return null;
+    }
+
+    public String getConstrainUniqueColumns() {
+        if (mConstrainUniqueColumns != null) return mConstrainUniqueColumns;
         return null;
     }
 
