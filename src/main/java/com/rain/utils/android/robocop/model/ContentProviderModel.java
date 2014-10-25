@@ -22,6 +22,9 @@ public class ContentProviderModel {
     @SerializedName("databaseVersion")
     private int mDatabaseVersion;
 
+    @SerializedName("use_sqlite_asset_helper")
+    private String mUseSqliteAssetHelper;
+
     @SerializedName("tables")
     private List<ContentProviderTableModel> mTables;
 
@@ -58,6 +61,12 @@ public class ContentProviderModel {
 
     public int getDatabaseVersion() {
         return mDatabaseVersion;
+    }
+
+    public String getUseSqliteAssetHelper() {
+        if (mUseSqliteAssetHelper != null && mUseSqliteAssetHelper.equalsIgnoreCase(Boolean.TRUE.toString()))
+            return Boolean.TRUE.toString();
+        return null;
     }
 
     public List<ContentProviderRelationshipModel> getRelationships() {

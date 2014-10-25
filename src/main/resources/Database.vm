@@ -4,16 +4,25 @@ import ${packageName}.database.table.*;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+#if( $useSqliteAssetHelper )
+import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
+#else
 import android.database.sqlite.SQLiteOpenHelper;
+#end
 
 #set( $providerNameLower = $providerName.toLowerCase() )
+#if( $useSqliteAssetHelper )
+public class ${providerName}Database extends SQLiteAssetHelper {
+#else
 public class ${providerName}Database extends SQLiteOpenHelper {
+#end
     private static final String DATABASE_NAME = "${providerNameLower}_database.db";
     private static final int DATABASE_VERSION = ${databaseVersion};
 
     public ${providerName}Database(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+#if( !$useSqliteAssetHelper )
 
     @Override
     public final void onCreate(final SQLiteDatabase db) {
@@ -22,6 +31,7 @@ public class ${providerName}Database extends SQLiteOpenHelper {
 
 #end
     }
+#end
 
     @Override
     public final void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {

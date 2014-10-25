@@ -75,6 +75,7 @@ public class ContentProviderWriter {
             // Create database class
             VelocityContext databaseContext = new VelocityContext(providerContext);
             databaseContext.put("databaseVersion", contentProviderModel.getDatabaseVersion());
+            databaseContext.put("useSqliteAssetHelper", contentProviderModel.getUseSqliteAssetHelper());
             writeFile(engine, databaseContext, "Database.vm", databasePath, "/" + contentProviderModel.getProviderName() + "Database.java");
 
             // Create all simple class models

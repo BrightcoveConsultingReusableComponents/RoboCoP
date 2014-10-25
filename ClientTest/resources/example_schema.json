@@ -1,6 +1,7 @@
 {
     "packageName": "com.brightcove.tinasample.data",
     "providerName": "parse",
+    "use_sqlite_asset_helper": "true",
     "databaseVersion": 1,
     "classes": [
         {
