@@ -40,7 +40,11 @@ public interface ${tableName}Table {
 
     String[] ALL_COLUMNS = new String[] {${allColumns}};
 
+#if( $createFullTextIndex )
+    String SQL_CREATE = "CREATE VIRTUAL TABLE ${tableNameLower} USING ${fullTextModule}(${tableCreate});";
+#else
     String SQL_CREATE = "CREATE TABLE ${tableNameLower} ( ${tableCreate} )";
+#end
 
     String SQL_INSERT = "INSERT INTO ${tableNameLower} ( ${insertFields} ) VALUES ( ${escapeFields} )";
 
