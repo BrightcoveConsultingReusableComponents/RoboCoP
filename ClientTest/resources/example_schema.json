@@ -1,7 +1,7 @@
 {
     "packageName": "com.brightcove.tinasample.data",
     "providerName": "parse",
-    "use_sqlite_asset_helper": "true",
+    "use_sqlite_asset_helper": "false",
     "databaseVersion": 1,
     "classes": [
         {
@@ -26,6 +26,8 @@
             "name": "video",
             "serialize_all_names": "true",
             "constrain_unique_multi_columns": "object_id, video_type",
+            "full_text_index_table": "true",
+            "full_text_index_module": "fts4",
             "members": [
                 {
                     "type": "string",

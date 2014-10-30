@@ -28,7 +28,6 @@ public class ${providerName}Database extends SQLiteOpenHelper {
     public final void onCreate(final SQLiteDatabase db) {
 #foreach( $table in $tables )
         db.execSQL(${table.getTableClassName()}Table.SQL_CREATE);
-
 #end
     }
 #end
@@ -41,9 +40,7 @@ public class ${providerName}Database extends SQLiteOpenHelper {
     private final void dropTablesAndCreate(final SQLiteDatabase db) {
 #foreach( $table in $tables )
         db.execSQL(${table.getTableClassName()}Table.SQL_DROP);
-
 #end
-
         onCreate(db);
     }
 

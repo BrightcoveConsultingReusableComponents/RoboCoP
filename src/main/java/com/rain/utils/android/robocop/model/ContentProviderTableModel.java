@@ -34,6 +34,12 @@ public class ContentProviderTableModel {
     @SerializedName("constrain_unique_multi_columns")
     private String mConstrainUniqueColumns;
 
+    @SerializedName("full_text_index_table")
+    private String mCreateFullTextIndex;
+
+    @SerializedName("full_text_index_module")
+    private String mFullTextModule;
+
     @SerializedName("members")
     private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
 
@@ -74,6 +80,16 @@ public class ContentProviderTableModel {
     public String getConstrainUniqueColumns() {
         if (mConstrainUniqueColumns != null) return mConstrainUniqueColumns;
         return null;
+    }
+
+    public String getCreateFullTextIndex() {
+        if (mCreateFullTextIndex != null) return mCreateFullTextIndex;
+        return null;
+    }
+
+    public String getFullTextModule() {
+        if (mFullTextModule != null) return mFullTextModule;
+        return "fts3";  // Default to fts3
     }
 
     private String getHasType(String type) {

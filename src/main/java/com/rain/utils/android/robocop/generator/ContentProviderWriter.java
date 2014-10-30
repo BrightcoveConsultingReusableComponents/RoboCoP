@@ -102,6 +102,8 @@ public class ContentProviderWriter {
                 tableContext.put("hasSerializedNames", table.getHasSerializedNames());
                 tableContext.put("serializeAllNames", table.getSerializeAllNames());
                 tableContext.put("constrainUniqueCols", table.getConstrainUniqueColumns());
+                tableContext.put("createFullTextIndex", table.getCreateFullTextIndex());
+                tableContext.put("fullTextModule", table.getFullTextModule());
                 tableContext.put("hasArrayType", table.getHasArrayType());
                 writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
                 writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
