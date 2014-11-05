@@ -113,6 +113,33 @@ public class ContentProviderTableModel {
         return null;
     }
 
+    public String getIsFtiAndHasConstraints() {
+        // If Full Text is disabled, return null
+        if (mFullTextModule == null) return null;
+
+        // This table is full-text indexed.  Iterate through all fields and see if any have a UNIQUE constraint.
+        for (ContentProviderTableFieldModel field : mFields) {
+            if (field.getUniqueConstraint() != "") {
+                return Boolean.TRUE.toString();
+            }
+        }
+        return null;
+    }
+
+    public List<String> getAllUniqueFieldNames() {
+        // Returns a List of all fields that have the UNIQUE constraint
+
+        List<String> fields = new ArrayList<String>();
+
+        for (ContentProviderTableFieldModel field: mFields) {
+            if (field.getUniqueConstraint() != "") {
+                fields.add(field.getFieldName());
+            }
+        }
+
+        return fields;
+    }
+
     public static class ContentProviderTableFieldModel {
 
         @SerializedName("type")

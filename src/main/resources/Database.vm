@@ -28,6 +28,10 @@ public class ${providerName}Database extends SQLiteOpenHelper {
     public final void onCreate(final SQLiteDatabase db) {
 #foreach( $table in $tables )
         db.execSQL(${table.getTableClassName()}Table.SQL_CREATE);
+#if( ${table.getIsFtiAndHasConstraints()} )
+        db.execSQL(${table.getTableClassName()}Table.SQL_CREATE_VIEW);
+        db.execSQL(${table.getTableClassName()}Table.SQL_CREATE_TRIGGER);
+#end
 #end
     }
 #end
