@@ -3,6 +3,9 @@ package ${packageName}.database.table;
 public interface ${tableName}Table {
 #set( $tableNameLower = $tableName.toLowerCase() )
     String TABLE_NAME = "${tableNameLower}";
+#if( ${table.getIsFtiAndHasConstraints()} )
+    String VIEW_NAME = "${tableNameLower}_view";
+#end
 
     String _ID = "_id";
 #set ($allColumns = "_ID")
@@ -11,13 +14,16 @@ public interface ${tableName}Table {
 #if ($field)
     String ${field.getConstantString()} = "${field.getConstantString().toLowerCase()}";
 #set ($allColumns = $allColumns + ", " + $field.getConstantString())
+#set ($allNewColumns = $allNewColumns + ", NEW." + $field.getConstantString())
 #set ($tableCreate = $tableCreate + ", " + $field.getConstantString().toLowerCase() + " " + $field.getTypeString() + $field.getUniqueConstraint() + $field.getNotNullConstraint())
 #if (!$insertFields)
 #set ($insertFields = $field.getConstantString().toLowerCase())
 #set ($escapeFields = "?")
+#set ($allNewFields = "NEW." + $field.getConstantString().toLowerCase())
 #else
 #set ($insertFields = $insertFields + ", " + $field.getConstantString().toLowerCase())
 #set ($escapeFields = $escapeFields + ", ?")
+#set ($allNewFields = $allNewFields + ", NEW." + $field.getConstantString().toLowerCase())
 #end
 #end
 #end
@@ -45,9 +51,23 @@ public interface ${tableName}Table {
 #else
     String SQL_CREATE = "CREATE TABLE ${tableNameLower} ( ${tableCreate} )";
 #end
+#if( ${table.getIsFtiAndHasConstraints()} )
 
+    String SQL_CREATE_VIEW = "CREATE VIEW ${tableNameLower}_view AS SELECT * FROM ${tableNameLower};";
+
+    String SQL_CREATE_TRIGGER =
+        "CREATE TRIGGER insert_${tableNameLower} INSTEAD OF INSERT ON ${tableNameLower}_view BEGIN" +
+#foreach( $fieldName in ${table.getAllUniqueFieldNames()} )
+        " SELECT RAISE(ABORT, 'column $fieldName is not unique.') FROM ${tableNameLower} WHERE $fieldName=NEW.$fieldName;" +
+#end
+        " INSERT INTO ${tableNameLower} ( ${insertFields} ) VALUES ( ${allNewFields} ); END;";
+
+    String SQL_INSERT = "INSERT INTO ${tableNameLower}_view ( ${insertFields} ) VALUES ( ${escapeFields} )";
+
+#else
     String SQL_INSERT = "INSERT INTO ${tableNameLower} ( ${insertFields} ) VALUES ( ${escapeFields} )";
 
+#end
     String SQL_DROP = "DROP TABLE IF EXISTS ${tableNameLower}";
 
     String WHERE_ID_EQUALS = _ID + "=?";

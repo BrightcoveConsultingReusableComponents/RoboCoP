@@ -189,7 +189,12 @@ public class ${providerName}Provider extends ContentProvider {
 #set( $tableNameLower = $tableNameCaps.toLowerCase() )
                 case ${tableNameCaps}_DIR:
                 case ${tableNameCaps}_ID:
-                    final long ${tableNameLower}Id = dbConnection.insertOrThrow(${table.getTableClassName()}Table.TABLE_NAME, null, values);
+#if( ${table.getIsFtiAndHasConstraints()} )
+#set( $insertTableName = ${table.getTableClassName()} + "Table.VIEW_NAME" )
+#else
+#set( $insertTableName = ${table.getTableClassName()} + "Table.TABLE_NAME" )
+#end
+                    final long ${tableNameLower}Id = dbConnection.insertOrThrow($insertTableName, null, values);
                     final Uri new${table.getTableClassName()}Uri = ContentUris.withAppendedId(${tableNameCaps}_CONTENT_URI, ${tableNameLower}Id);
                     getContext().getContentResolver().notifyChange(new${table.getTableClassName()}Uri, null);
 #set( $includedRelations = $providerModel.getRelationshipsForTable($table) )
@@ -234,7 +239,11 @@ public class ${providerName}Provider extends ContentProvider {
 #set( $tableNameCaps = $table.getTableConstantName() )
             case ${tableNameCaps}_DIR:
             case ${tableNameCaps}_ID:
+#if( ${table.getIsFtiAndHasConstraints()} )
+                tableName = ${table.getTableClassName()}Table.VIEW_NAME;
+#else
                 tableName = ${table.getTableClassName()}Table.TABLE_NAME;
+#end
                 break;
 #end
             default:
