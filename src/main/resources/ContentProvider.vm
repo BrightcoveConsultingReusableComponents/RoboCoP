@@ -1,7 +1,7 @@
 package ${packageName}.provider;
 
+import ${packageName}.BuildConfig;
 import ${packageName}.database.${providerName}Database;
-
 import ${packageName}.database.table.*;
 
 import android.provider.BaseColumns;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ${providerName}Provider extends ContentProvider {
 
-    public static final String AUTHORITY = "${packageName}.provider";
+    public static final String AUTHORITY = BuildConfig.PACKAGE_NAME + ".provider";
 
     public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
 
