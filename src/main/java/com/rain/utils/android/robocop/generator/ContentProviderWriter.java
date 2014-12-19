@@ -62,6 +62,7 @@ public class ContentProviderWriter {
 
             VelocityContext baseContext = new VelocityContext();
             baseContext.put("packageName", contentProviderModel.getPackage());
+            baseContext.put("applicationId", contentProviderModel.getApplicationId());
             baseContext.put("providerModel", contentProviderModel);
 
             // Create Content Provider class and AndroidManifest XML definition

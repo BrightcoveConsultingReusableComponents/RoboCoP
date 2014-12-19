@@ -25,6 +25,9 @@ public class ContentProviderModel {
     @SerializedName("use_sqlite_asset_helper")
     private String mUseSqliteAssetHelper;
 
+    @SerializedName("application_id")
+    private String mApplicationId;
+
     @SerializedName("tables")
     private List<ContentProviderTableModel> mTables;
 
@@ -61,6 +64,10 @@ public class ContentProviderModel {
 
     public int getDatabaseVersion() {
         return mDatabaseVersion;
+    }
+
+    public String getApplicationId() {
+        return mApplicationId;
     }
 
     public String getUseSqliteAssetHelper() {
