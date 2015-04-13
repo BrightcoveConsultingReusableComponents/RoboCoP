@@ -120,8 +120,14 @@ public class ${providerName}Provider extends ContentProvider {
 
 #end
             default:
-                throw new IllegalArgumentException("Unsupported URI: " + uri);
+                IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                handleGetTypeException(exception, uri);
+                throw exception;
         }
+    }
+
+    protected void handleGetTypeException(Exception exception, final Uri uri) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 
     @Override
@@ -166,14 +172,19 @@ public class ${providerName}Provider extends ContentProvider {
                 break;
 #end
             default :
-                throw new IllegalArgumentException("Unsupported URI:" + uri);
+                IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                handleQueryException(exception, uri, projection, selection, selectionArgs, sortOrder);
+                throw exception;
         }
 
         Cursor cursor = queryBuilder.query(dbConnection, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
+    }
 
+    protected void handleQueryException(Exception exception, final Uri uri, String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 
     @Override
@@ -210,12 +221,14 @@ public class ${providerName}Provider extends ContentProvider {
 #end
                 default :
                     onPostInsert(false, null, uri, values);
-                    throw new IllegalArgumentException("Unsupported URI:" + uri);
+                    IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                    handleInsertException(exception, uri, values);
+                    throw exception;
             }
         } catch (SQLiteConstraintException e) {
-            // Don't report this error.
+            handleInsertException(e, uri, values);
         } catch (Exception e) {
-            e.printStackTrace();
+            handleInsertException(e, uri, values);
         } finally {
             dbConnection.endTransaction();
         }
@@ -223,8 +236,13 @@ public class ${providerName}Provider extends ContentProvider {
 
         return null;
     }
+
     protected void onPostInsert(final boolean success, final Uri successUri, final Uri uri, final ContentValues values) {
         /* No-op: Allow extending classes to override */
+    }
+
+    protected void handleInsertException(Exception exception, final Uri uri, final ContentValues values) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 
     @Override
@@ -248,7 +266,9 @@ public class ${providerName}Provider extends ContentProvider {
 #end
             default:
                 onPostBulkInsert(bSuccess, numValues, uri, values);
-                throw new IllegalArgumentException("Unsupported URI: " + uri);
+                IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                handleBulkInsertException(exception, uri, values);
+                throw exception;
         }
 
         dbConnection.beginTransaction();
@@ -257,9 +277,9 @@ public class ${providerName}Provider extends ContentProvider {
                 dbConnection.insertOrThrow(tableName, null, value);
                 numValues++;
             } catch (SQLiteConstraintException e) {
-                // Don't report this error.
+                handleBulkInsertException(e, uri, values);
             } catch (SQLException e) {
-                e.printStackTrace();
+                handleBulkInsertException(e, uri, values);
             }
         }
 
@@ -274,8 +294,13 @@ public class ${providerName}Provider extends ContentProvider {
 
         return numValues;
     }
+
     protected void onPostBulkInsert(final boolean success, final int numValues, final Uri uri, final ContentValues[] values) {
         /* No-op: Allow extending classes to override */
+    }
+
+    protected void handleBulkInsertException(Exception exception, Uri uri, ContentValues[] values) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 
     @Override
@@ -325,7 +350,9 @@ public class ${providerName}Provider extends ContentProvider {
 #end
                 default :
                     onPostUpdate(bSuccess, updateCount, uri, values, selection, selectionArgs);
-                    throw new IllegalArgumentException("Unsupported URI:" + uri);
+                    IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                    handleUpdateException(exception, uri, values, selection, selectionArgs);
+                    throw exception;
             }
         } finally {
             dbConnection.endTransaction();
@@ -341,8 +368,13 @@ public class ${providerName}Provider extends ContentProvider {
         onPostUpdate(bSuccess, updateCount, uri, values, selection, selectionArgs);
         return updateCount;
     }
+
     protected void onPostUpdate(final boolean success, final int numResults, final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
         /* No-op: Allow extending classes to override */
+    }
+
+    protected void handleUpdateException(Exception exception, final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 
     @Override
@@ -390,7 +422,9 @@ public class ${providerName}Provider extends ContentProvider {
 #end
                 default :
                     onPostDelete(bSuccess, deleteCount, uri, selection, selectionArgs);
-                    throw new IllegalArgumentException("Unsupported URI:" + uri);
+                    IllegalArgumentException exception = new IllegalArgumentException("Unsupported URI: " + uri);
+                    handleDeleteException(exception, uri, selection, selectionArgs);
+                    throw exception;
             }
         } finally {
             dbConnection.endTransaction();
@@ -406,7 +440,12 @@ public class ${providerName}Provider extends ContentProvider {
         onPostDelete(bSuccess, deleteCount, uri, selection, selectionArgs);
         return deleteCount;
     }
+
     protected void onPostDelete(final boolean success, final int numResults, final Uri uri, final String selection, final String[] selectionArgs) {
         /* No-op: Allow extending classes to override */
+    }
+
+    protected void handleDeleteException(Exception exception, final Uri uri, final String selection, final String[] selectionArgs) {
+        /* No-op: Allow extending classes a chance to handle */
     }
 }
