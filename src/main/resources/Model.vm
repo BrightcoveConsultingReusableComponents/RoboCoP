@@ -106,9 +106,12 @@ public class ${tableName} {
     public ${tableName}(final Cursor cursor, boolean prependTableName) {
         String prefix = prependTableName ? ${tableName}Table.TABLE_NAME + "_" : "";
         setRowId(cursor.getLong(cursor.getColumnIndex(prefix + ${tableName}Table._ID)));
+
+        int colIndex;
 #foreach ($field in $fields)
 #if($field)
-        set${field.getNameAsTitleCase()}(cursor.${field.getJavaTypeStringGetter()}(cursor.getColumnIndex(prefix + ${tableName}Table.${field.getConstantString()}))${field.getBooleanComparison()});
+        colIndex = cursor.getColumnIndex(prefix + ${tableName}Table.${field.getConstantString()});
+        if (colIndex >= 0) set${field.getNameAsTitleCase()}(cursor.${field.getJavaTypeStringGetter()}(colIndex)${field.getBooleanComparison()});
 #end
 #end
 #if( $participatingRelationships )
