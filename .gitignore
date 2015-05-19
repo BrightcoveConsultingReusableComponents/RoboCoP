@@ -1,9 +1,10 @@
+# Output from running sample build
 ClientTest/src-gen
-target
+
+# Build related
 build/
-out
-workspace.xml
 .gradle/
 
-.idea/dictionaries/
-.idea/misc.xml
+# IntelliJ Idea 
+.idea/
+RoboCoP.iml
