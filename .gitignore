@@ -1,7 +1,9 @@
 ClientTest/src-gen
 target
+build/
 out
 workspace.xml
+.gradle/
 
 .idea/dictionaries/
 .idea/misc.xml
