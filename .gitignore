@@ -1,7 +1,10 @@
+# Output from running sample build
 ClientTest/src-gen
-target
-out
-workspace.xml
 
-.idea/dictionaries/
-.idea/misc.xml
+# Build related
+build/
+.gradle/
+
+# IntelliJ Idea 
+.idea/
+*.iml
