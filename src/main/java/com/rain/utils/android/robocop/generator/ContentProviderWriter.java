@@ -55,6 +55,10 @@ public class ContentProviderWriter {
 
         Properties props = new Properties();
         URL url = this.getClass().getClassLoader().getResource("velocity.properties");
+        if (url == null) {
+            System.err.println("Unable to load velocity.properties file, quitting");
+            return;
+        }
         try {
             props.load(url.openStream());
             VelocityEngine engine = new VelocityEngine(props);
