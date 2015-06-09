@@ -41,7 +41,7 @@ public class ContentProviderTableModel {
     private String mFullTextModule;
 
     @SerializedName("members")
-    private List<ContentProviderTableFieldModel> mFields = new ArrayList<ContentProviderTableFieldModel>();
+    private List<ContentProviderTableFieldModel> mFields = new ArrayList<>();
 
     public ContentProviderTableModel(String tableName) {
         mName = tableName;
@@ -191,19 +191,22 @@ public class ContentProviderTableModel {
 
         public String getJavaTypeString() {
             String typeLower = mFieldType.toLowerCase();
-            if (typeLower.equals(BOOLEAN)) {
-                return "boolean";
-            } else if (typeLower.equals(INT)) {
-                return "int";
-            } else if (typeLower.equals(LONG) || typeLower.equals(DOUBLE)) {
-                return "double";
-            } else if (typeLower.equals(ARRAY)) {
-                return "List<" + mArrayType + ">";
-            } else if (typeLower.equals(STRING) || typeLower.equals(DATE)) {
-                return "String";
-            } else {
-                // Assume type is a generated class
-                return mFieldType;
+            switch (typeLower) {
+                case BOOLEAN:
+                    return "boolean";
+                case INT:
+                    return "int";
+                case LONG:
+                case DOUBLE:
+                    return "double";
+                case ARRAY:
+                    return "List<" + mArrayType + ">";
+                case STRING:
+                case DATE:
+                    return "String";
+                default:
+                    // Assume type is a generated class
+                    return mFieldType;
             }
         }
 
