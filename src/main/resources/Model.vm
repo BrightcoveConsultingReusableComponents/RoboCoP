@@ -11,6 +11,7 @@ import android.os.Parcelable;
 #if($hasDateType)
 import android.text.TextUtils;
 #end
+import android.util.Log;
 #if($hasArrayType || $hasSerializedNames)
 
 #end
@@ -328,6 +329,34 @@ public class ${className} implements Parcelable {
         return gson.fromJson(json, ${className}.class);
     }
 #end
+
+## DUMP METHOD
+## Dumps all values to LogCat
+    /**
+     * Dumps all member variable values to logcat using the class's name as a tag.
+     */
+    public void dump() {
+        dump("${className}");
+    }
+
+    /**
+     * Dumps all member variable values to logcat, using the specified tag.
+     * @param tagName The name of the tag to use when calling logcat.
+     */
+    public void dump(String tagName) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getIsArrayType()})
+        Log.v(tagName, "${className}.${field.getPrivateVariableName()} items:");
+        for (int i = 0; i < ${field.getPrivateVariableName()}.size(); i++) {
+            Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
+        }
+#else
+        Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()});
+#end
+#end
+#end
+    }
 ## PRIVATE METHODS
 #if($hasDateType)
 
