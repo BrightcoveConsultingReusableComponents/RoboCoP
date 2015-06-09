@@ -87,6 +87,7 @@ public class ContentProviderWriter {
             for(ContentProviderTableModel classModel : contentProviderModel.getClasses()) {
                 VelocityContext classContext = new VelocityContext(baseContext);
                 classContext.put("class", classModel);
+                classContext.put("isClass", Boolean.toString(true));
                 classContext.put("className", classModel.getName());
                 classContext.put("fields", classModel.getFields());
                 classContext.put("hasDateType", classModel.getHasDateType());
@@ -100,8 +101,9 @@ public class ContentProviderWriter {
             for (ContentProviderTableModel table : contentProviderModel.getTables()) {
                 VelocityContext tableContext = new VelocityContext(baseContext);
                 tableContext.put("table", table);
+                tableContext.put("isTable", Boolean.toString(true));
                 tableContext.put("participatingRelationships", contentProviderModel.getRelationshipsForTable(table));
-                tableContext.put("tableName", table.getTableClassName());
+                tableContext.put("className", table.getTableClassName());
                 tableContext.put("fields", table.getFields());
                 tableContext.put("hasDateType", table.getHasDateType());
                 tableContext.put("hasSerializedNames", table.getHasSerializedNames());

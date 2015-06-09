@@ -1,7 +1,7 @@
 package ${packageName}.database.table;
 
-public interface ${tableName}Table {
-#set( $tableNameLower = $tableName.toLowerCase() )
+public interface ${className}Table {
+#set( $tableNameLower = $className.toLowerCase() )
     String TABLE_NAME = "${tableNameLower}";
 #if( ${table.getIsFtiAndHasConstraints()} )
     String VIEW_NAME = "${tableNameLower}_view";
