@@ -6,6 +6,8 @@ package ${packageName}.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 #end
+import android.os.Parcel;
+import android.os.Parcelable;
 #if($hasDateType)
 import android.text.TextUtils;
 #end
@@ -44,7 +46,7 @@ import java.util.Locale;
 ## CLASS DECLARATION
 ## Declare the class name.
 
-public class ${className} {
+public class ${className} implements Parcelable {
 ## PRIVATE MEMBER VARIABLES
 ## Declare all private member variables for this class.
 #if($isTable)
@@ -166,9 +168,54 @@ public class ${className} {
     public Long getRowId() {
         return mRowId;
     }
+
 #end
+##
+## PARCELABLE CONSTRUCTORS AND METHODS
+## Constructors and methods that allow the class to implement Parcelable
+##
+    public ${className}(Parcel parcel) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getParcelReadMethod()})
+        ${field.getParcelReadMethod()};
+#end
+#end
+#end
+    }
+
+    static final Creator<${className}> CREATOR = new Creator<${className}>() {
+        @Override
+        public ${className} createFromParcel(Parcel source) {
+            return new ${className}(source);
+        }
+
+        @Override
+        public ${className}[] newArray(int size) {
+            return new ${className}[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getParcelWriteMethod()})
+        ${field.getParcelWriteMethod()};
+#end
+#end
+#end
+    }
+
+##
 ## SETTERS
 ## Declare public setter methods.
+##
 #foreach ($field in $fields)
 #if($field)
 #if(${field.getIsDateType()})

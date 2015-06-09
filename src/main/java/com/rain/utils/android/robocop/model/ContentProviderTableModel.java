@@ -272,6 +272,50 @@ public class ContentProviderTableModel {
             }
             return Boolean.TRUE.toString();
         }
+
+        public String getParcelReadMethod() {
+            String typeLower = mFieldType.toLowerCase();
+            switch (typeLower) {
+                case BOOLEAN:
+                    return "this." + getPrivateVariableName() + " = (parcel.readInt() == 1)";
+                case INT:
+                    return "this." + getPrivateVariableName() + " = parcel.readInt()";
+                case LONG:
+                case DOUBLE:
+                    return "this." + getPrivateVariableName() + " = parcel.readDouble()";
+                case ARRAY:
+                    return "parcel.readList(" + getPrivateVariableName() + ", null)";
+                case STRING:
+                case DATE:
+                    return "this." + getPrivateVariableName() + " = parcel.readString()";
+                default:
+                    // This is most likely a generated class
+                    // TODO - Figure out how to handle custom classes
+                    return null;
+            }
+        }
+
+        public String getParcelWriteMethod() {
+            String typeLower = mFieldType.toLowerCase();
+            switch (typeLower) {
+                case BOOLEAN:
+                    return "dest.writeInt(" + getPrivateVariableName() + " ? 1 : 0)";
+                case INT:
+                    return "dest.writeInt(" + getPrivateVariableName() + ")";
+                case LONG:
+                case DOUBLE:
+                    return "dest.writeDouble(" + getPrivateVariableName() + ")";
+                case ARRAY:
+                    return "dest.writeList(" + getPrivateVariableName() + ")";
+                case STRING:
+                case DATE:
+                    return "dest.writeString(" + getPrivateVariableName() + ")";
+                default:
+                    // This is most likely a generated class
+                    // TODO - Figure out how to handle custom classes
+                    return null;
+            }
+        }
     }
 
     @Override
