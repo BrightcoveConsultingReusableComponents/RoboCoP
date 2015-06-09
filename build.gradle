@@ -23,6 +23,11 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version:'2.2.4'
 }
 
+compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+}
+
 // Variables for Artifactory publishing are stored in local gradle.properties
 artifactory {
     contextUrl = "${artifactory_contextUrl}"
