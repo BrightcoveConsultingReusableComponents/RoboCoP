@@ -4,6 +4,7 @@ ClientTest/src-gen
 # Build related
 build/
 .gradle/
+classes/
 
 # IntelliJ Idea 
 .idea/
