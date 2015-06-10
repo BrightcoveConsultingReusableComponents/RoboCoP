@@ -185,7 +185,7 @@ public class ${className} implements Parcelable {
 #end
     }
 
-    static final Creator<${className}> CREATOR = new Creator<${className}>() {
+    public static final Parcelable.Creator<${className}> CREATOR = new Parcelable.Creator<${className}>() {
         @Override
         public ${className} createFromParcel(Parcel source) {
             return new ${className}(source);
