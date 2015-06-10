@@ -1,18 +1,21 @@
 package ${packageName}.model;
 ## IMPORTS
 ## Declare all imports in alphabetical order.
-#if($tableName)
+#if($isTable)
 
 import android.content.ContentValues;
 import android.database.Cursor;
 #end
+import android.os.Parcel;
+import android.os.Parcelable;
 #if($hasDateType)
 import android.text.TextUtils;
 #end
+import android.util.Log;
 #if($hasArrayType || $hasSerializedNames)
 
 #end
-#if($hasArrayType || $className)
+#if($hasArrayType || $isClass)
 import com.google.gson.Gson;
 #end
 #if($hasSerializedNames)
@@ -21,9 +24,9 @@ import com.google.gson.annotations.SerializedName;
 #if($hasArrayType)
 import com.google.gson.reflect.TypeToken;
 #end
-#if($tableName)
+#if($isTable)
 
-import ${packageName}.database.table.${tableName}Table;
+import ${packageName}.database.table.${className}Table;
 #end
 
 #if($hasArrayType)
@@ -44,14 +47,10 @@ import java.util.Locale;
 ## CLASS DECLARATION
 ## Declare the class name.
 
-#if($className)
-public class ${className} {
-#elseif($tableName)
-public class ${tableName} {
-#end
+public class ${className} implements Parcelable {
 ## PRIVATE MEMBER VARIABLES
 ## Declare all private member variables for this class.
-#if($tableName)
+#if($isTable)
     private long mRowId;
 #end
 #foreach( $field in $fields )
@@ -86,31 +85,28 @@ public class ${tableName} {
 #end
 #end
 #end
-#if($tableName)
+#if($isTable)
 
     private ContentValues mValues = new ContentValues();
 #end
 
 ## CONSTRUCTOR
 ## Declare basic constructors
-#if($className)
     public ${className}() {}
 
-#elseif($tableName)
-    public ${tableName}() {}
-
-    public ${tableName}(final Cursor cursor) {
+#if($isTable)
+    public ${className}(final Cursor cursor) {
         this(cursor, false);
     }
 
-    public ${tableName}(final Cursor cursor, boolean prependTableName) {
-        String prefix = prependTableName ? ${tableName}Table.TABLE_NAME + "_" : "";
-        setRowId(cursor.getLong(cursor.getColumnIndex(prefix + ${tableName}Table._ID)));
+    public ${className}(final Cursor cursor, boolean prependTableName) {
+        String prefix = prependTableName ? ${className}Table.TABLE_NAME + "_" : "";
+        setRowId(cursor.getLong(cursor.getColumnIndex(prefix + ${className}Table._ID)));
 
         int colIndex;
 #foreach ($field in $fields)
 #if($field)
-        colIndex = cursor.getColumnIndex(prefix + ${tableName}Table.${field.getConstantString()});
+        colIndex = cursor.getColumnIndex(prefix + ${className}Table.${field.getConstantString()});
         if (colIndex >= 0) set${field.getNameAsTitleCase()}(cursor.${field.getJavaTypeStringGetter()}(colIndex)${field.getBooleanComparison()});
 #end
 #end
@@ -120,7 +116,7 @@ public class ${tableName} {
 #set( $foreignKeyTitleCase = $relationship.getForeignKeyVariableAsTitleCase($table) )
 #set( $foreignKeyConstant = $relationship.getForeignKeyNameForTable($table) )
 #if( $foreignKeyTitleCase && $foreignKeyConstant)
-        set${foreignKeyTitleCase}(cursor.getLong(cursor.getColumnIndex(prefix + ${tableName}Table.${foreignKeyConstant})));
+        set${foreignKeyTitleCase}(cursor.getLong(cursor.getColumnIndex(prefix + ${className}Table.${foreignKeyConstant})));
 #end
 #end
 #end
@@ -141,7 +137,7 @@ public class ${tableName} {
 
 #end
             if(mRowId > 0) {
-                mValues.put(${tableName}Table._ID, mRowId);
+                mValues.put(${className}Table._ID, mRowId);
             }
 #foreach ($field in $fields)
 #if($field)
@@ -149,15 +145,15 @@ public class ${tableName} {
 
             listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
             jsonString = gson.toJson(${field.getPrivateVariableName()}, listType);
-            mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+            mValues.put(${className}Table.${field.getConstantString()}, jsonString);
 
 #elseif(${field.getIsClass()})
-            mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()}.toString());
+            mValues.put(${className}Table.${field.getConstantString()}, ${field.getPrivateVariableName()}.toString());
 #elseif(${field.getIsDateType()})
             date = convertStringToDate(${field.getPrivateVariableName()}, ${field.getStaticTimeFormatName()});
-            if (date != null) mValues.put(${tableName}Table.${field.getConstantString()}, date.getTime());
+            if (date != null) mValues.put(${className}Table.${field.getConstantString()}, date.getTime());
 #else
-            mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
+            mValues.put(${className}Table.${field.getConstantString()}, ${field.getPrivateVariableName()});
 #end
 #end
 #end
@@ -167,15 +163,60 @@ public class ${tableName} {
 
     public void setRowId(long _id) {
         mRowId = _id;
-        mValues.put(${tableName}Table._ID, _id);
+        mValues.put(${className}Table._ID, _id);
     }
 
     public Long getRowId() {
         return mRowId;
     }
+
 #end
+##
+## PARCELABLE CONSTRUCTORS AND METHODS
+## Constructors and methods that allow the class to implement Parcelable
+##
+    public ${className}(Parcel parcel) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getParcelReadMethod()})
+        ${field.getParcelReadMethod()};
+#end
+#end
+#end
+    }
+
+    public static final Parcelable.Creator<${className}> CREATOR = new Parcelable.Creator<${className}>() {
+        @Override
+        public ${className} createFromParcel(Parcel source) {
+            return new ${className}(source);
+        }
+
+        @Override
+        public ${className}[] newArray(int size) {
+            return new ${className}[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getParcelWriteMethod()})
+        ${field.getParcelWriteMethod()};
+#end
+#end
+#end
+    }
+
+##
 ## SETTERS
 ## Declare public setter methods.
+##
 #foreach ($field in $fields)
 #if($field)
 #if(${field.getIsDateType()})
@@ -191,27 +232,27 @@ public class ${tableName} {
 #if(${field.getIsClass()})
     public void set${field.getNameAsTitleCase()}(String ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getJavaTypeString()}.fromJson(${field.getFieldName()});
-#if($tableName)
-        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+#if($isTable)
+        mValues.put(${className}Table.${field.getConstantString()}, ${field.getFieldName()});
 #end
     }
 
 #end
     public void set${field.getNameAsTitleCase()}(${field.getJavaTypeString()} ${field.getFieldName()}) {
         ${field.getPrivateVariableName()} = ${field.getFieldName()};
-#if($tableName)
+#if($isTable)
 #if(${field.getIsArrayType()})
         Gson gson = new Gson();
         Type listType = new TypeToken<List<${field.getFieldArrayType()}>>() {}.getType();
         String jsonString = gson.toJson(${field.getFieldName()}, listType);
-        mValues.put(${tableName}Table.${field.getConstantString()}, jsonString);
+        mValues.put(${className}Table.${field.getConstantString()}, jsonString);
 #elseif(${field.getIsClass()})
-        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
+        mValues.put(${className}Table.${field.getConstantString()}, ${field.getFieldName()}.toString());
 #elseif(${field.getIsDateType()})
         Date date = convertStringToDate(${field.getFieldName()}, ${field.getStaticTimeFormatName()});
-        if (date != null) mValues.put(${tableName}Table.${field.getConstantString()}, date.getTime());
+        if (date != null) mValues.put(${className}Table.${field.getConstantString()}, date.getTime());
 #else
-        mValues.put(${tableName}Table.${field.getConstantString()}, ${field.getFieldName()});
+        mValues.put(${className}Table.${field.getConstantString()}, ${field.getFieldName()});
 #end
 #end
     }
@@ -248,7 +289,7 @@ public class ${tableName} {
 #if( $foreignKeyTitleCase )
     public void set${foreignKeyTitleCase}(Long ${foreignKeyVariableName}) {
         ${foreignKeyPrivateVariableName} = ${foreignKeyVariableName};
-        mValues.put(${tableName}Table.${foreignKeyConstant}, ${foreignKeyVariableName});
+        mValues.put(${className}Table.${foreignKeyConstant}, ${foreignKeyVariableName});
     }
 
     public Long get${foreignKeyTitleCase}() {
@@ -258,20 +299,20 @@ public class ${tableName} {
 #end
 #end
 #end
-#if($tableName)
-    public static List<${tableName}> listFromCursor(Cursor cursor) {
-        List<${tableName}> list = new ArrayList<${tableName}>();
+#if($isTable)
+    public static List<${className}> listFromCursor(Cursor cursor) {
+        List<${className}> list = new ArrayList<>();
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                list.add(new ${tableName}(cursor));
+                list.add(new ${className}(cursor));
             } while (cursor.moveToNext());
         }
 
         return list;
     }
 #end
-#if($className)
+#if($isClass)
 ## TOSTRING METHOD
 ## Declare method that converts object to JSON
 
@@ -288,6 +329,34 @@ public class ${tableName} {
         return gson.fromJson(json, ${className}.class);
     }
 #end
+
+## DUMP METHOD
+## Dumps all values to LogCat
+    /**
+     * Dumps all member variable values to logcat using the class's name as a tag.
+     */
+    public void dump() {
+        dump("${className}");
+    }
+
+    /**
+     * Dumps all member variable values to logcat, using the specified tag.
+     * @param tagName The name of the tag to use when calling logcat.
+     */
+    public void dump(String tagName) {
+#foreach( $field in $fields )
+#if($field)
+#if(${field.getIsArrayType()})
+        Log.v(tagName, "${className}.${field.getPrivateVariableName()} items:");
+        for (int i = 0; i < ${field.getPrivateVariableName()}.size(); i++) {
+            Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
+        }
+#else
+        Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()});
+#end
+#end
+#end
+    }
 ## PRIVATE METHODS
 #if($hasDateType)
 
