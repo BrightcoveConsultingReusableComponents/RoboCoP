@@ -166,7 +166,7 @@ Installing The Provider - Important!!!
 ---------
 In order to use a ContentProvider in your Android app you must install it into your application's AndroidManifest file. The generator creates a special file in the root of your generated code called 'content-provider.xml' to assist with this step. Copy the contents of this file into your AndroidManifest file inside the <Application/> node. The generated code has the provider's exported property set to false. If this is true, then other applications may be able to access your data. Only set this to true if you know what you are doing.
 
-Your Done, Enjoy! - Example Usage of a Generated ContentProvider
+You're Done, Enjoy! - Example Usage of a Generated ContentProvider
 ----------
 To learn more about the ContentProvider class and its usages, please read the official docs: http://developer.android.com/reference/android/content/ContentProvider.html and http://developer.android.com/guide/topics/providers/content-providers.html. The following are some examples that encompass most of our typical usages.
 
