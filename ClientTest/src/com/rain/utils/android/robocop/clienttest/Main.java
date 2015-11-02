@@ -11,6 +11,6 @@ import com.rain.utils.android.robocop.generator.ContentProviderWriter;
 public class Main {
     public static void main(String[] args) {
         ContentProviderWriter writer = new ContentProviderWriter();
-        writer.createContentProvider("ClientTest/resources/example_schema.json", "ClientTest/src-gen/");
+        writer.createContentProvider("ClientTest/resources/classes_only_schema.json", "ClientTest/src-gen/");
     }
 }

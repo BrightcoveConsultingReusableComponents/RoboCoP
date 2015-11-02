@@ -69,51 +69,56 @@ public class ContentProviderWriter {
             baseContext.put("applicationId", contentProviderModel.getApplicationId());
             baseContext.put("providerModel", contentProviderModel);
 
-            // Create Content Provider class and AndroidManifest XML definition
-            VelocityContext providerContext = new VelocityContext(baseContext);
-            providerContext.put("providerName", contentProviderModel.getProviderName());
-            providerContext.put("tables", contentProviderModel.getTables());
-            providerContext.put("relationships", contentProviderModel.getRelationships());
-            writeFile(engine, providerContext, "ContentProvider.vm", providerPath, "/" + contentProviderModel.getProviderName() + "Provider.java");
-            writeFile(engine, providerContext, "ProviderXML.vm", providerXMLPath, "/content-provider.xml");
+            // Create Content Provider class, AndroidManifest XML definition, and DB class (as long as there are tables defined)
+            if (contentProviderModel.getTables() != null && !contentProviderModel.getTables().isEmpty()) {
+                VelocityContext providerContext = new VelocityContext(baseContext);
+                providerContext.put("providerName", contentProviderModel.getProviderName());
+                providerContext.put("tables", contentProviderModel.getTables());
+                providerContext.put("relationships", contentProviderModel.getRelationships());
+                writeFile(engine, providerContext, "ContentProvider.vm", providerPath, "/" + contentProviderModel.getProviderName() + "Provider.java");
+                writeFile(engine, providerContext, "ProviderXML.vm", providerXMLPath, "/content-provider.xml");
 
-            // Create database class
-            VelocityContext databaseContext = new VelocityContext(providerContext);
-            databaseContext.put("databaseVersion", contentProviderModel.getDatabaseVersion());
-            databaseContext.put("useSqliteAssetHelper", contentProviderModel.getUseSqliteAssetHelper());
-            writeFile(engine, databaseContext, "Database.vm", databasePath, "/" + contentProviderModel.getProviderName() + "Database.java");
+                VelocityContext databaseContext = new VelocityContext(providerContext);
+                databaseContext.put("databaseVersion", contentProviderModel.getDatabaseVersion());
+                databaseContext.put("useSqliteAssetHelper", contentProviderModel.getUseSqliteAssetHelper());
+                writeFile(engine, databaseContext, "Database.vm", databasePath, "/" + contentProviderModel.getProviderName() + "Database.java");
+            }
 
             // Create all simple class models
-            for(ContentProviderTableModel classModel : contentProviderModel.getClasses()) {
-                VelocityContext classContext = new VelocityContext(baseContext);
-                classContext.put("class", classModel);
-                classContext.put("isClass", Boolean.toString(true));
-                classContext.put("className", classModel.getName());
-                classContext.put("fields", classModel.getFields());
-                classContext.put("hasDateType", classModel.getHasDateType());
-                classContext.put("hasArrayType", classModel.getHasArrayType());
-                classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
-                classContext.put("serializeAllNames", classModel.getSerializeAllNames());
-                writeFile(engine, classContext, "Model.vm", modelPath, "/" + classModel.getName() + ".java");
+            if (contentProviderModel.getClasses() != null && !contentProviderModel.getClasses().isEmpty()) {
+                for (ContentProviderTableModel classModel : contentProviderModel.getClasses()) {
+                    VelocityContext classContext = new VelocityContext(baseContext);
+                    classContext.put("class", classModel);
+                    classContext.put("isClass", Boolean.toString(true));
+                    classContext.put("className", classModel.getName());
+                    classContext.put("fields", classModel.getFields());
+                    classContext.put("hasDateType", classModel.getHasDateType());
+                    classContext.put("hasArrayType", classModel.getHasArrayType());
+                    classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
+                    classContext.put("serializeAllNames", classModel.getSerializeAllNames());
+                    writeFile(engine, classContext, "Model.vm", modelPath, "/" + classModel.getName() + ".java");
+                }
             }
 
             // Create all tables and associated model objects
-            for (ContentProviderTableModel table : contentProviderModel.getTables()) {
-                VelocityContext tableContext = new VelocityContext(baseContext);
-                tableContext.put("table", table);
-                tableContext.put("isTable", Boolean.toString(true));
-                tableContext.put("participatingRelationships", contentProviderModel.getRelationshipsForTable(table));
-                tableContext.put("className", table.getTableClassName());
-                tableContext.put("fields", table.getFields());
-                tableContext.put("hasDateType", table.getHasDateType());
-                tableContext.put("hasSerializedNames", table.getHasSerializedNames());
-                tableContext.put("serializeAllNames", table.getSerializeAllNames());
-                tableContext.put("constrainUniqueCols", table.getConstrainUniqueColumns());
-                tableContext.put("createFullTextIndex", table.getCreateFullTextIndex());
-                tableContext.put("fullTextModule", table.getFullTextModule());
-                tableContext.put("hasArrayType", table.getHasArrayType());
-                writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
-                writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
+            if (contentProviderModel.getTables() != null && !contentProviderModel.getTables().isEmpty()) {
+                for (ContentProviderTableModel table : contentProviderModel.getTables()) {
+                    VelocityContext tableContext = new VelocityContext(baseContext);
+                    tableContext.put("table", table);
+                    tableContext.put("isTable", Boolean.toString(true));
+                    tableContext.put("participatingRelationships", contentProviderModel.getRelationshipsForTable(table));
+                    tableContext.put("className", table.getTableClassName());
+                    tableContext.put("fields", table.getFields());
+                    tableContext.put("hasDateType", table.getHasDateType());
+                    tableContext.put("hasSerializedNames", table.getHasSerializedNames());
+                    tableContext.put("serializeAllNames", table.getSerializeAllNames());
+                    tableContext.put("constrainUniqueCols", table.getConstrainUniqueColumns());
+                    tableContext.put("createFullTextIndex", table.getCreateFullTextIndex());
+                    tableContext.put("fullTextModule", table.getFullTextModule());
+                    tableContext.put("hasArrayType", table.getHasArrayType());
+                    writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
+                    writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
+                }
             }
 
         } catch (IOException e) {
