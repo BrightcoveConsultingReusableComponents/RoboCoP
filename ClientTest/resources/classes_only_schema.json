@@ -1,0 +1,116 @@
+{
+  "application_id": "com.brightcove.nh4apidemo",
+  "packageName": "com.brightcove.nh4apidemo.data",
+  "classes": [
+    {
+      "name": "Nh4Screen",
+      "serialize_all_names": "true",
+      "members": [
+        {
+          "type": "array",
+          "array_type": "Nh4Item",
+          "name": "items"
+        },
+        {
+          "type": "int",
+          "name": "screen_template_id"
+        },
+        {
+          "type": "string",
+          "name": "header_title"
+        },
+        {
+          "type": "string",
+          "name": "edit_post_api"
+        }
+      ]
+    },
+    {
+      "name": "Nh4Item",
+      "serialize_all_names": "true",
+      "members": [
+        {
+          "type": "array",
+          "array_type": "VcPlaylist",
+          "name": "items"
+        },
+        {
+          "type": "int",
+          "name": "type"
+        },
+        {
+          "type": "string",
+          "name": "id"
+        },
+        {
+          "type": "string",
+          "name": "title"
+        },
+        {
+          "type": "array",
+          "array_type": "Nh4SortOption",
+          "name": "sort_options"
+        },
+        {
+          "type": "array",
+          "array_type": "Nh4Item",
+          "name": "items"
+        },
+        {
+          "type": "string",
+          "name": "items_api"
+        },
+        {
+          "type": "string",
+          "name": "image"
+        },
+        {
+          "type": "string",
+          "name": "subtitle"
+        },
+        {
+          "type": "string",
+          "name": "lead_text"
+        },
+        {
+          "type": "string",
+          "name": "description"
+        },
+        {
+          "type": "string",
+          "name": "badge_overlay"
+        },
+        {
+          "type": "boolean",
+          "name": "lockable"
+        },
+        {
+          "type": "string",
+          "name": "screen_api"
+        },
+        {
+          "type": "string",
+          "name": "anchor"
+        },
+        {
+          "type": "string",
+          "name": "queue_api"
+        }
+      ]
+    },
+    {
+      "name": "Nh4SortOption",
+      "serialize_all_names": "true",
+      "members": [
+        {
+          "type": "string",
+          "name": "title"
+        },
+        {
+          "type": "string",
+          "name": "api"
+        }
+      ]
+    }
+  ]
+}
