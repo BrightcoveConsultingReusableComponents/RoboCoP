@@ -36,7 +36,9 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 #end
+#if($isTable)
 import java.util.ArrayList;
+#end
 #if($hasDateType)
 import java.util.Date;
 #end
@@ -347,9 +349,15 @@ public class ${className} implements Parcelable {
 #foreach( $field in $fields )
 #if($field)
 #if(${field.getIsArrayType()})
-        Log.v(tagName, "${className}.${field.getPrivateVariableName()} items:");
-        for (int i = 0; i < ${field.getPrivateVariableName()}.size(); i++) {
-            Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
+        if (${field.getPrivateVariableName()} == null) {
+            Log.v(tagName, "${field.getPrivateVariableName()} is null");
+        } else if (${field.getPrivateVariableName()}.isEmpty()) {
+            Log.v(tagName, "${field.getPrivateVariableName()} is empty");
+        } else {
+            Log.v(tagName, "${className}.${field.getPrivateVariableName()} items:");
+            for (int i = 0; i < ${field.getPrivateVariableName()}.size(); i++) {
+                Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
+            }
         }
 #else
         Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()});
