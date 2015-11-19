@@ -289,9 +289,8 @@ public class ContentProviderTableModel {
                 case DATE:
                     return "this." + getPrivateVariableName() + " = parcel.readString()";
                 default:
-                    // This is most likely a generated class
-                    // TODO - Figure out how to handle custom classes
-                    return null;
+                    // This is a generated class
+                    return "this." + getPrivateVariableName() + " = parcel.readParcelable(" + mFieldType + ".class.getClassLoader())";
             }
         }
 
@@ -311,9 +310,8 @@ public class ContentProviderTableModel {
                 case DATE:
                     return "dest.writeString(" + getPrivateVariableName() + ")";
                 default:
-                    // This is most likely a generated class
-                    // TODO - Figure out how to handle custom classes
-                    return null;
+                    // This is a generated class
+                    return "dest.writeParcelable(" + getPrivateVariableName() + ", PARCELABLE_WRITE_RETURN_VALUE)";
             }
         }
     }
