@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 #end
-#if($isTable)
+#if($isTable || $hasArrayType)
 import java.util.ArrayList;
 #end
 #if($hasDateType)

@@ -284,7 +284,7 @@ public class ContentProviderTableModel {
                 case DOUBLE:
                     return "this." + getPrivateVariableName() + " = parcel.readDouble()";
                 case ARRAY:
-                    return "parcel.readList(" + getPrivateVariableName() + ", null)";
+                    return getPrivateVariableName() + " = new ArrayList<>();parcel.readList(" + getPrivateVariableName() + ", " + mArrayType + ".class.getClassLoader())";
                 case STRING:
                 case DATE:
                     return "this." + getPrivateVariableName() + " = parcel.readString()";
