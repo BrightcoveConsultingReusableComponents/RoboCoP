@@ -62,7 +62,9 @@ public class ${className} implements Parcelable {
     @SerializedName("$field.getSerializedName()")
 #elseif($serializeAllNames)
 
+#if(!${field.getIsThrowableType()})
     @SerializedName("$field.getFieldName()")
+#end
 #end
     private ${field.getJavaTypeString()} ${field.getPrivateVariableName()};
 #end
@@ -359,6 +361,8 @@ public class ${className} implements Parcelable {
                 Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
             }
         }
+#elseif(${field.getIsThrowableType()})
+        Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()}.getLocalizedMessage());
 #else
         Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()});
 #end

@@ -108,6 +108,37 @@
           "name": "api"
         }
       ]
+    },
+    {
+      "name": "ApiErrorMessage",
+      "members": [
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ApiError",
+      "members": [
+        {
+          "name": "error_code",
+          "type": "string"
+        },
+        {
+          "name": "response_code",
+          "type": "int"
+        },
+        {
+          "name": "throwable",
+          "type": "throwable"
+        },
+        {
+          "name": "errors",
+          "type": "array",
+          "array_type": "ApiErrorMessage"
+        }
+      ]
     }
   ]
 }

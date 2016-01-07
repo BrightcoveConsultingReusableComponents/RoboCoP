@@ -21,9 +21,10 @@ public class ContentProviderTableModel {
     public static final String LONG = "long";
     public static final String DATE = "date";
     public static final String ARRAY = "array";
+    public static final String THROWABLE = "throwable";
     public static final String[] FIELD_TYPES = {
             STRING, DOUBLE, INT, BOOLEAN,
-            LONG, DATE, ARRAY
+            LONG, DATE, ARRAY, THROWABLE
     };
 
     @SerializedName("name")
@@ -214,6 +215,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "String";
+                case THROWABLE:
+                    return "Throwable";
                 default:
                     // Assume type is a generated class
                     return mFieldType;
@@ -256,6 +259,10 @@ public class ContentProviderTableModel {
 
         public String getIsArrayType() {
             return mFieldType.toLowerCase().equals(ARRAY) ? Boolean.TRUE.toString() : null;
+        }
+
+        public String getIsThrowableType() {
+            return mFieldType.toLowerCase().equals(THROWABLE) ? Boolean.TRUE.toString() : null;
         }
 
         public String getUniqueConstraint() {
@@ -301,6 +308,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "this." + getPrivateVariableName() + " = parcel.readString()";
+                case THROWABLE:
+                    return "this." + getPrivateVariableName() + " = (Throwable) parcel.readSerializable()";
                 default:
                     // This is a generated class
                     return "this." + getPrivateVariableName() + " = parcel.readParcelable(" + mFieldType + ".class.getClassLoader())";
@@ -322,6 +331,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "dest.writeString(" + getPrivateVariableName() + ")";
+                case THROWABLE:
+                    return "dest.writeSerializable(" + getPrivateVariableName() + ")";
                 default:
                     // This is a generated class
                     return "dest.writeParcelable(" + getPrivateVariableName() + ", PARCELABLE_WRITE_RETURN_VALUE)";
