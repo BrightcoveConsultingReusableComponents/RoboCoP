@@ -1,6 +1,7 @@
 {
   "application_id": "com.brightcove.nh4apidemo",
   "packageName": "com.brightcove.nh4apidemo.data",
+  "use_bc_logger": "true",
   "classes": [
     {
       "name": "Nh4Screen",
