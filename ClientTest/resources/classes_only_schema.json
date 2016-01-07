@@ -4,7 +4,6 @@
   "classes": [
     {
       "name": "Nh4Screen",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "array",
@@ -27,7 +26,6 @@
     },
     {
       "name": "Nh4Item",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "array",
@@ -100,7 +98,6 @@
     },
     {
       "name": "Nh4SortOption",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "string",

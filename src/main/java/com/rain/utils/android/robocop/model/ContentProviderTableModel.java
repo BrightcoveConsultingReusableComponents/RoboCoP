@@ -11,6 +11,7 @@ import java.util.List;
  * Date: 1/15/14
  * Time: 9:46 AM
  */
+@SuppressWarnings("unused")
 public class ContentProviderTableModel {
 
     public static final String STRING = "string";
@@ -72,7 +73,12 @@ public class ContentProviderTableModel {
     }
 
     public String getSerializeAllNames() {
-        if (mSerializeAllNames != null && mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
+        // Set to TRUE by default
+        if (mSerializeAllNames == null) {
+            return Boolean.TRUE.toString();
+        }
+
+        if (mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
             return Boolean.TRUE.toString();
         return null;
     }
@@ -119,7 +125,7 @@ public class ContentProviderTableModel {
 
         // This table is full-text indexed.  Iterate through all fields and see if any have a UNIQUE constraint.
         for (ContentProviderTableFieldModel field : mFields) {
-            if (field.getUniqueConstraint() != "") {
+            if ("".equals(field.getUniqueConstraint())) {
                 return Boolean.TRUE.toString();
             }
         }
@@ -129,10 +135,10 @@ public class ContentProviderTableModel {
     public List<String> getAllUniqueFieldNames() {
         // Returns a List of all fields that have the UNIQUE constraint
 
-        List<String> fields = new ArrayList<String>();
+        List<String> fields = new ArrayList<>();
 
         for (ContentProviderTableFieldModel field: mFields) {
-            if (field.getUniqueConstraint() != "") {
+            if ("".equals(field.getUniqueConstraint())) {
                 fields.add(field.getFieldName());
             }
         }
@@ -180,12 +186,16 @@ public class ContentProviderTableModel {
         }
 
         public String getTypeString() {
-            if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
-                return "INTEGER";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DOUBLE) || mFieldType.equals(DATE)) {
-                return "NUMERIC";
-            } else {
-                return "TEXT";
+            switch (mFieldType) {
+                case INT:
+                case BOOLEAN:
+                    return "INTEGER";
+                case LONG:
+                case DOUBLE:
+                case DATE:
+                    return "NUMERIC";
+                default:
+                    return "TEXT";
             }
         }
 
@@ -211,14 +221,17 @@ public class ContentProviderTableModel {
         }
 
         public String getJavaTypeStringGetter() {
-            if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
-                return "getInt";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DATE)) {
-                return "getLong";
-            } else if(mFieldType.equals(DOUBLE)) {
-                return "getDouble";
-            } else {
-                return "getString";
+            switch (mFieldType) {
+                case INT:
+                case BOOLEAN:
+                    return "getInt";
+                case LONG:
+                case DATE:
+                    return "getLong";
+                case DOUBLE:
+                    return "getDouble";
+                default:
+                    return "getString";
             }
         }
 
@@ -318,6 +331,6 @@ public class ContentProviderTableModel {
 
     @Override
     public boolean equals(Object o) {
-        return ((ContentProviderTableModel)o).getName().equals(getName());
+        return o instanceof ContentProviderTableModel && ((ContentProviderTableModel) o).getName().equals(getName());
     }
 }
