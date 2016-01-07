@@ -9,3 +9,5 @@ classes/
 # IntelliJ Idea 
 .idea/
 *.iml
+
+local.properties
