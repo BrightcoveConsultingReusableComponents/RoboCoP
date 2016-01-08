@@ -68,6 +68,7 @@ public class ContentProviderWriter {
             baseContext.put("packageName", contentProviderModel.getPackage());
             baseContext.put("applicationId", contentProviderModel.getApplicationId());
             baseContext.put("providerModel", contentProviderModel);
+            baseContext.put("useBcLogger", contentProviderModel.getUseBcLogger());
 
             // Create Content Provider class, AndroidManifest XML definition, and DB class (as long as there are tables defined)
             if (contentProviderModel.getTables() != null && !contentProviderModel.getTables().isEmpty()) {

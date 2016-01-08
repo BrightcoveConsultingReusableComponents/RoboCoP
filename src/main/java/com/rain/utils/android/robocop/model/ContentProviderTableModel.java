@@ -11,6 +11,7 @@ import java.util.List;
  * Date: 1/15/14
  * Time: 9:46 AM
  */
+@SuppressWarnings("unused")
 public class ContentProviderTableModel {
 
     public static final String STRING = "string";
@@ -20,9 +21,10 @@ public class ContentProviderTableModel {
     public static final String LONG = "long";
     public static final String DATE = "date";
     public static final String ARRAY = "array";
+    public static final String THROWABLE = "throwable";
     public static final String[] FIELD_TYPES = {
             STRING, DOUBLE, INT, BOOLEAN,
-            LONG, DATE, ARRAY
+            LONG, DATE, ARRAY, THROWABLE
     };
 
     @SerializedName("name")
@@ -72,7 +74,12 @@ public class ContentProviderTableModel {
     }
 
     public String getSerializeAllNames() {
-        if (mSerializeAllNames != null && mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
+        // Set to TRUE by default
+        if (mSerializeAllNames == null) {
+            return Boolean.TRUE.toString();
+        }
+
+        if (mSerializeAllNames.equalsIgnoreCase(Boolean.TRUE.toString()))
             return Boolean.TRUE.toString();
         return null;
     }
@@ -119,7 +126,7 @@ public class ContentProviderTableModel {
 
         // This table is full-text indexed.  Iterate through all fields and see if any have a UNIQUE constraint.
         for (ContentProviderTableFieldModel field : mFields) {
-            if (field.getUniqueConstraint() != "") {
+            if ("".equals(field.getUniqueConstraint())) {
                 return Boolean.TRUE.toString();
             }
         }
@@ -129,10 +136,10 @@ public class ContentProviderTableModel {
     public List<String> getAllUniqueFieldNames() {
         // Returns a List of all fields that have the UNIQUE constraint
 
-        List<String> fields = new ArrayList<String>();
+        List<String> fields = new ArrayList<>();
 
         for (ContentProviderTableFieldModel field: mFields) {
-            if (field.getUniqueConstraint() != "") {
+            if ("".equals(field.getUniqueConstraint())) {
                 fields.add(field.getFieldName());
             }
         }
@@ -180,12 +187,16 @@ public class ContentProviderTableModel {
         }
 
         public String getTypeString() {
-            if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
-                return "INTEGER";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DOUBLE) || mFieldType.equals(DATE)) {
-                return "NUMERIC";
-            } else {
-                return "TEXT";
+            switch (mFieldType) {
+                case INT:
+                case BOOLEAN:
+                    return "INTEGER";
+                case LONG:
+                case DOUBLE:
+                case DATE:
+                    return "NUMERIC";
+                default:
+                    return "TEXT";
             }
         }
 
@@ -204,6 +215,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "String";
+                case THROWABLE:
+                    return "Throwable";
                 default:
                     // Assume type is a generated class
                     return mFieldType;
@@ -211,14 +224,17 @@ public class ContentProviderTableModel {
         }
 
         public String getJavaTypeStringGetter() {
-            if (mFieldType.equals(INT) || mFieldType.equals(BOOLEAN)) {
-                return "getInt";
-            } else if (mFieldType.equals(LONG) || mFieldType.equals(DATE)) {
-                return "getLong";
-            } else if(mFieldType.equals(DOUBLE)) {
-                return "getDouble";
-            } else {
-                return "getString";
+            switch (mFieldType) {
+                case INT:
+                case BOOLEAN:
+                    return "getInt";
+                case LONG:
+                case DATE:
+                    return "getLong";
+                case DOUBLE:
+                    return "getDouble";
+                default:
+                    return "getString";
             }
         }
 
@@ -243,6 +259,10 @@ public class ContentProviderTableModel {
 
         public String getIsArrayType() {
             return mFieldType.toLowerCase().equals(ARRAY) ? Boolean.TRUE.toString() : null;
+        }
+
+        public String getIsThrowableType() {
+            return mFieldType.toLowerCase().equals(THROWABLE) ? Boolean.TRUE.toString() : null;
         }
 
         public String getUniqueConstraint() {
@@ -288,6 +308,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "this." + getPrivateVariableName() + " = parcel.readString()";
+                case THROWABLE:
+                    return "this." + getPrivateVariableName() + " = (Throwable) parcel.readSerializable()";
                 default:
                     // This is a generated class
                     return "this." + getPrivateVariableName() + " = parcel.readParcelable(" + mFieldType + ".class.getClassLoader())";
@@ -309,6 +331,8 @@ public class ContentProviderTableModel {
                 case STRING:
                 case DATE:
                     return "dest.writeString(" + getPrivateVariableName() + ")";
+                case THROWABLE:
+                    return "dest.writeSerializable(" + getPrivateVariableName() + ")";
                 default:
                     // This is a generated class
                     return "dest.writeParcelable(" + getPrivateVariableName() + ", PARCELABLE_WRITE_RETURN_VALUE)";
@@ -318,6 +342,6 @@ public class ContentProviderTableModel {
 
     @Override
     public boolean equals(Object o) {
-        return ((ContentProviderTableModel)o).getName().equals(getName());
+        return o instanceof ContentProviderTableModel && ((ContentProviderTableModel) o).getName().equals(getName());
     }
 }

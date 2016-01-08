@@ -37,6 +37,9 @@ public class ContentProviderModel {
     @SerializedName("relationships")
     private List<ContentProviderRelationshipModel> mRelationships;
 
+    @SerializedName("use_bc_logger")
+    private String mUseBcLogger;
+
     public ContentProviderModel(String packageName, String providerName, int databaseVersion, List<ContentProviderTableModel> tables, List<ContentProviderRelationshipModel> relationships) {
         mPackage = packageName;
         mProviderName = providerName;
@@ -68,6 +71,10 @@ public class ContentProviderModel {
 
     public String getApplicationId() {
         return mApplicationId;
+    }
+
+    public String getUseBcLogger() {
+        return mUseBcLogger;
     }
 
     public String getUseSqliteAssetHelper() {

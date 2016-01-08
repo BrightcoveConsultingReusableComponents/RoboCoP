@@ -1,10 +1,10 @@
 {
   "application_id": "com.brightcove.nh4apidemo",
   "packageName": "com.brightcove.nh4apidemo.data",
+  "use_bc_logger": "true",
   "classes": [
     {
       "name": "Nh4Screen",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "array",
@@ -27,7 +27,6 @@
     },
     {
       "name": "Nh4Item",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "array",
@@ -100,7 +99,6 @@
     },
     {
       "name": "Nh4SortOption",
-      "serialize_all_names": "true",
       "members": [
         {
           "type": "string",
@@ -109,6 +107,37 @@
         {
           "type": "string",
           "name": "api"
+        }
+      ]
+    },
+    {
+      "name": "ApiErrorMessage",
+      "members": [
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ApiError",
+      "members": [
+        {
+          "name": "error_code",
+          "type": "string"
+        },
+        {
+          "name": "response_code",
+          "type": "int"
+        },
+        {
+          "name": "throwable",
+          "type": "throwable"
+        },
+        {
+          "name": "errors",
+          "type": "array",
+          "array_type": "ApiErrorMessage"
         }
       ]
     }
