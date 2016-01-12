@@ -63,10 +63,12 @@ public class ${className} implements Parcelable {
 #if($field)
 #if(${field.getSerializedName()})
 
+    public static final String SERIALIZED_NAME_$field.getConstantString() = "$field.getSerializedName()";
     @SerializedName("$field.getSerializedName()")
 #elseif($serializeAllNames)
 
 #if(!${field.getIsThrowableType()})
+    public static final String SERIALIZED_NAME_$field.getConstantString() = "$field.getFieldName()";
     @SerializedName("$field.getFieldName()")
 #end
 #end
