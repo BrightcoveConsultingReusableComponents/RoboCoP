@@ -377,7 +377,7 @@ public class ${className} implements Parcelable {
 #end
             for (int i = 0; i < ${field.getPrivateVariableName()}.size(); i++) {
 #if($useBcLogger)
-                BcLogger.v("  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
+                BcLogger.v("  ${field.getPrivateVariableName()}[%d]: %s", i, ${field.getPrivateVariableName()}.get(i).toString());
 #else
                 Log.v(tagName, "  ${field.getPrivateVariableName()}[" + i + "]: " + ${field.getPrivateVariableName()}.get(i));
 #end
