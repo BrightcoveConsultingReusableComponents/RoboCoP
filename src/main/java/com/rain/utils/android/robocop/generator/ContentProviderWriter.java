@@ -95,6 +95,7 @@ public class ContentProviderWriter {
                     classContext.put("fields", classModel.getFields());
                     classContext.put("hasDateType", classModel.getHasDateType());
                     classContext.put("hasArrayType", classModel.getHasArrayType());
+                    classContext.put("hasMapType", classModel.getHasMapType());
                     classContext.put("hasSerializedNames", classModel.getHasSerializedNames());
                     classContext.put("serializeAllNames", classModel.getSerializeAllNames());
                     writeFile(engine, classContext, "Model.vm", modelPath, "/" + classModel.getName() + ".java");
@@ -117,6 +118,7 @@ public class ContentProviderWriter {
                     tableContext.put("createFullTextIndex", table.getCreateFullTextIndex());
                     tableContext.put("fullTextModule", table.getFullTextModule());
                     tableContext.put("hasArrayType", table.getHasArrayType());
+                    tableContext.put("hasMapType", table.getHasMapType());
                     writeFile(engine, tableContext, "Table.vm", tablePath, "/" + table.getTableClassName() + "Table.java");
                     writeFile(engine, tableContext, "Model.vm", modelPath, "/" + table.getTableClassName() + ".java");
                 }
