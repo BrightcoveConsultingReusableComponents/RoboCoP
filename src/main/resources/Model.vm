@@ -50,6 +50,9 @@ import java.util.List;
 #if($hasDateType)
 import java.util.Locale;
 #end
+#if($hasMapType)
+import java.util.Map;
+#end
 ## CLASS DECLARATION
 ## Declare the class name.
 
@@ -67,7 +70,8 @@ public class ${className} implements Parcelable {
     @SerializedName("$field.getSerializedName()")
 #elseif($serializeAllNames)
 
-#if(!${field.getIsThrowableType()})
+#if(${field.getIsThrowableType()} || ${field.getIsMapType()})
+#else
     public static final String SERIALIZED_NAME_$field.getConstantString() = "$field.getFieldName()";
     @SerializedName("$field.getFieldName()")
 #end
@@ -389,6 +393,7 @@ public class ${className} implements Parcelable {
 #else
         Log.v(tagName, "${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()}.getLocalizedMessage());
 #end
+#elseif(${field.getIsMapType()})
 #else
 #if($useBcLogger)
         BcLogger.v("${className}.${field.getPrivateVariableName()}: " + ${field.getPrivateVariableName()});

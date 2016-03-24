@@ -22,9 +22,10 @@ public class ContentProviderTableModel {
     public static final String DATE = "date";
     public static final String ARRAY = "array";
     public static final String THROWABLE = "throwable";
+    public static final String MAP = "map";
     public static final String[] FIELD_TYPES = {
             STRING, DOUBLE, INT, BOOLEAN,
-            LONG, DATE, ARRAY, THROWABLE
+            LONG, DATE, ARRAY, THROWABLE, MAP
     };
 
     @SerializedName("name")
@@ -71,6 +72,10 @@ public class ContentProviderTableModel {
 
     public String getHasArrayType() {
         return getHasType(ARRAY);
+    }
+
+    public String getHasMapType() {
+        return getHasType(MAP);
     }
 
     public String getSerializeAllNames() {
@@ -170,6 +175,12 @@ public class ContentProviderTableModel {
         @SerializedName("constraint_not_null")
         private String mConstraintNotNull;
 
+        @SerializedName("map_key_type")
+        private String mMapKeyType;
+
+        @SerializedName("map_value_type")
+        private String mMapValueType;
+
         public String getFieldType() {
             return mFieldType;
         }
@@ -217,6 +228,9 @@ public class ContentProviderTableModel {
                     return "String";
                 case THROWABLE:
                     return "Throwable";
+                case MAP:
+                    return "Map<" + mMapKeyType + ", " + mMapValueType + ">";
+
                 default:
                     // Assume type is a generated class
                     return mFieldType;
@@ -265,6 +279,10 @@ public class ContentProviderTableModel {
             return mFieldType.toLowerCase().equals(THROWABLE) ? Boolean.TRUE.toString() : null;
         }
 
+        public String getIsMapType() {
+            return mFieldType.toLowerCase().equals(MAP) ? Boolean.TRUE.toString() : null;
+        }
+
         public String getUniqueConstraint() {
             return Boolean.TRUE.toString().equalsIgnoreCase(mConstraintUnique) ? " UNIQUE" : "";
         }
@@ -310,6 +328,9 @@ public class ContentProviderTableModel {
                     return "this." + getPrivateVariableName() + " = parcel.readString()";
                 case THROWABLE:
                     return "this." + getPrivateVariableName() + " = (Throwable) parcel.readSerializable()";
+                case MAP:
+                    // TODO: No support for reading maps from a parcel
+                    return null;
                 default:
                     // This is a generated class
                     return "this." + getPrivateVariableName() + " = parcel.readParcelable(" + mFieldType + ".class.getClassLoader())";
@@ -333,6 +354,9 @@ public class ContentProviderTableModel {
                     return "dest.writeString(" + getPrivateVariableName() + ")";
                 case THROWABLE:
                     return "dest.writeSerializable(" + getPrivateVariableName() + ")";
+                case MAP:
+                    // TODO: No support for writing maps to a parcel
+                    return null;
                 default:
                     // This is a generated class
                     return "dest.writeParcelable(" + getPrivateVariableName() + ", PARCELABLE_WRITE_RETURN_VALUE)";

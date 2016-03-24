@@ -107,6 +107,12 @@
         {
           "type": "string",
           "name": "api"
+        },
+        {
+          "name": "endpoints",
+          "type": "map",
+          "map_key_type": "String",
+          "map_value_type": "String"
         }
       ]
     },
